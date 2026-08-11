@@ -1,5 +1,10 @@
-
-# AgroVG：农业视觉定位的大规模多源基准数据集
+---
+title: AgroVG翻译
+date: 2026-08-11
+tags: [技术, 论文, 翻译]
+summary: AgroVG：农业视觉定位的大规模多源基准数据集
+---
+# [AgroVG：农业视觉定位的大规模多源基准数据集](https://arxiv.org/abs/2605.22034)
 
 ## 摘要
 

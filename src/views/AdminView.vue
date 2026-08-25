@@ -468,6 +468,7 @@ function removeLocalBySlug(slug) {
   line-height: 1.6;
   resize: none;
   background: #fafafa;
+  overflow-y: auto
 }
 .markdown-preview {
   flex: 1;

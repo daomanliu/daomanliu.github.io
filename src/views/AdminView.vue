@@ -384,6 +384,8 @@ function removeLocalBySlug(slug) {
   min-width: 0;
   display: flex;
   flex-direction: column;
+  height: 100%;
+  overflow: hidden;
 }
 .editor-header {
   display: flex;

@@ -296,9 +296,10 @@ function removeLocalBySlug(slug) {
 <style scoped>
 .admin {
   display: flex;
-  height: 100%;
+  height: 100vh;
   min-height: 0;
   background: #fff;
+  overflow: hidden;
 }
 
 /* 左侧文章列表（可收起） */
@@ -468,7 +469,8 @@ function removeLocalBySlug(slug) {
   line-height: 1.6;
   resize: none;
   background: #fafafa;
-  overflow-y: auto
+  overflow-y: auto;
+  box-sizing: border-box;
 }
 .markdown-preview {
   flex: 1;

@@ -1,5 +1,5 @@
 <template>
-  <div class="blog-layout">
+  <div class="blog-layout" :class="{ wide: isWide }">
     <!-- 顶部导航 -->
     <header class="blog-header">
       <div class="header-inner">
@@ -66,6 +66,12 @@ function handleLogout() {
   flex-direction: column;
   background: #f7f8fa;
 }
+/* 宽布局（后台编辑）：整页锁定在视口内，让分屏区自己滚动 */
+.blog-layout.wide {
+  height: 100vh;
+  min-height: 0;
+  overflow: hidden;
+}
 .blog-header {
   background: #fff;
   border-bottom: 1px solid #eee;
@@ -125,16 +131,19 @@ function handleLogout() {
   margin: 0 auto;
   padding: 24px 20px 48px;
 }
-/* 宽布局（后台编辑）：占满整个宽度并撑满剩余高度 */
+/* 宽布局（后台编辑）：占满整个宽度并撑满剩余高度，页面本身不滚动 */
 .blog-main.wide {
   max-width: none;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   padding: 0;
+  overflow: hidden;
 }
 .blog-main.wide > * {
   flex: 1;
   min-height: 0;
+  height: 100%;
 }
 .blog-footer {
   text-align: center;

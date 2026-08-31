@@ -80,7 +80,54 @@ export const usePostsStore = defineStore('posts', () => {
       .sort((a, b) => b.count - a.count)
   })
 
+  // 每篇文章的本地状态：draft（本地草稿）/ modified（已发布文章被本地改过）
+  const localKind = computed(() => {
+    const m = new Map()
+    for (const s of Object.keys(overrides.value)) m.set(s, 'modified')
+    for (const s of Object.keys(drafts.value)) m.set(s, 'draft')
+    return m
+  })
+
   // ========== Actions ==========
+  // 是否已发布（在 posts.json 索引里）
+  function isPublished(slug) {
+    return index.value.some(p => p.slug === slug)
+  }
+
+  // slug 是否已被占用（已发布 / 本地草稿 / 本地覆盖）
+  function slugExists(slug) {
+    return isPublished(slug) || !!drafts.value[slug] || !!overrides.value[slug]
+  }
+
+  // 导入：直接写入一份完整的 md 文本
+  // 命中已发布文章 → 覆盖层（标为「已修改」）；否则 → 本地草稿
+  function putRaw(slug, raw) {
+    if (isPublished(slug)) {
+      overrides.value = { ...overrides.value, [slug]: raw }
+      localStorage.setItem(OVERRIDE_KEY, JSON.stringify(overrides.value))
+      return 'modified'
+    }
+    drafts.value = { ...drafts.value, [slug]: raw }
+    localStorage.setItem(DRAFT_KEY, JSON.stringify(drafts.value))
+    return 'draft'
+  }
+
+  // 重命名：把本地数据从 oldSlug 迁移到 newSlug（调用方需自行校验 newSlug 未冲突）
+  function renameLocal(oldSlug, newSlug) {
+    if (!oldSlug || oldSlug === newSlug) return
+    if (drafts.value[oldSlug]) {
+      const next = { ...drafts.value, [newSlug]: drafts.value[oldSlug] }
+      delete next[oldSlug]
+      drafts.value = next
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(next))
+    } else if (overrides.value[oldSlug]) {
+      const next = { ...overrides.value, [newSlug]: overrides.value[oldSlug] }
+      delete next[oldSlug]
+      overrides.value = next
+      localStorage.setItem(OVERRIDE_KEY, JSON.stringify(next))
+    }
+  }
+
   // 拉取文章索引 posts/posts.json
   async function loadIndex(force = false) {
     if (loaded.value && !force) return
@@ -152,7 +199,8 @@ export const usePostsStore = defineStore('posts', () => {
 
   return {
     index, loading, loaded, searchQuery, activeTag,
-    allPosts, publishedPosts, allTags,
-    loadIndex, loadPost, saveLocal, exportPost, removeLocal
+    allPosts, publishedPosts, allTags, localKind,
+    loadIndex, loadPost, saveLocal, exportPost, removeLocal,
+    isPublished, slugExists, putRaw, renameLocal
   }
 })

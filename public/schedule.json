@@ -20,31 +20,22 @@
   ],
   "courses": [
     {
-      "id": "eng-ic",
-      "name": "大学英语IIC(巴渝文化传播)",
-      "teacher": "唐明志",
+      "id": "eng-preview",
+      "name": "英语预习",
+      "teacher": "",
       "location": "",
-      "color": "orange",
-      "weekday": 2,
+      "color": "pink",
+      "weekday": 1,
       "periods": [1, 2]
     },
     {
-      "id": "sys-design",
-      "name": "系统分析与设计",
-      "teacher": "王晓蒙",
+      "id": "vocab-1",
+      "name": "单词",
+      "teacher": "",
       "location": "",
-      "color": "blue",
-      "weekday": 3,
-      "periods": [1, 2]
-    },
-    {
-      "id": "db-java-morning",
-      "name": "数据库与Java程序设计实践",
-      "teacher": "郑志强",
-      "location": "",
-      "color": "gold",
-      "weekday": 5,
-      "periods": [1, 2]
+      "color": "red",
+      "weekday": 1,
+      "periods": [3, 4]
     },
     {
       "id": "mao-gai",
@@ -56,6 +47,33 @@
       "periods": [7, 8, 9]
     },
     {
+      "id": "cet6-1",
+      "name": "英语六级",
+      "teacher": "",
+      "location": "",
+      "color": "gold",
+      "weekday": 1,
+      "periods": [12, 13]
+    },
+    {
+      "id": "eng-ic",
+      "name": "大学英语IIC(巴渝文化传播)",
+      "teacher": "唐明志",
+      "location": "",
+      "color": "orange",
+      "weekday": 2,
+      "periods": [1, 2]
+    },
+    {
+      "id": "vocab-2",
+      "name": "单词",
+      "teacher": "",
+      "location": "",
+      "color": "red",
+      "weekday": 2,
+      "periods": [3, 4]
+    },
+    {
       "id": "probability",
       "name": "概率论与数理统计",
       "teacher": "张天然",
@@ -65,12 +83,39 @@
       "periods": [7, 8]
     },
     {
-      "id": "pe-c",
-      "name": "体育C(乒乓球)",
+      "id": "cet6-2",
+      "name": "英语六级",
       "teacher": "",
       "location": "",
-      "color": "cyan",
-      "weekday": 4,
+      "color": "gold",
+      "weekday": 2,
+      "periods": [12, 13]
+    },
+    {
+      "id": "sys-design",
+      "name": "系统分析与设计",
+      "teacher": "王晓蒙",
+      "location": "",
+      "color": "blue",
+      "weekday": 3,
+      "periods": [1, 2]
+    },
+    {
+      "id": "vocab-3",
+      "name": "单词",
+      "teacher": "",
+      "location": "",
+      "color": "red",
+      "weekday": 3,
+      "periods": [3, 4]
+    },
+    {
+      "id": "complex-analysis",
+      "name": "复变函数",
+      "teacher": "",
+      "location": "",
+      "color": "lime",
+      "weekday": 3,
       "periods": [7, 8, 9]
     },
     {
@@ -83,6 +128,33 @@
       "periods": [12, 13]
     },
     {
+      "id": "circuit-4",
+      "name": "电路",
+      "teacher": "",
+      "location": "",
+      "color": "volcano",
+      "weekday": 4,
+      "periods": [1, 2]
+    },
+    {
+      "id": "vocab-4",
+      "name": "单词",
+      "teacher": "",
+      "location": "",
+      "color": "red",
+      "weekday": 4,
+      "periods": [3, 4]
+    },
+    {
+      "id": "pe-c",
+      "name": "体育C(乒乓球)",
+      "teacher": "",
+      "location": "第一运动场",
+      "color": "cyan",
+      "weekday": 4,
+      "periods": [7, 8, 9]
+    },
+    {
       "id": "marxism",
       "name": "马克思主义基本原理",
       "teacher": "王垚",
@@ -92,12 +164,111 @@
       "periods": [12, 13]
     },
     {
+      "id": "db-java-morning",
+      "name": "数据库与Java程序设计实践",
+      "teacher": "郑志强",
+      "location": "",
+      "color": "gold",
+      "weekday": 5,
+      "periods": [1, 2]
+    },
+    {
+      "id": "vocab-5",
+      "name": "单词",
+      "teacher": "",
+      "location": "",
+      "color": "red",
+      "weekday": 5,
+      "periods": [3, 4]
+    },
+    {
+      "id": "matrix-analysis",
+      "name": "矩阵分析",
+      "teacher": "",
+      "location": "",
+      "color": "magenta",
+      "weekday": 5,
+      "periods": [7, 8]
+    },
+    {
       "id": "db-java-evening",
       "name": "数据库与Java程序设计实践",
       "teacher": "郑志强",
       "location": "",
       "color": "yellow",
       "weekday": 5,
+      "periods": [12, 13]
+    },
+    {
+      "id": "circuit-6",
+      "name": "电路",
+      "teacher": "",
+      "location": "",
+      "color": "volcano",
+      "weekday": 6,
+      "periods": [1, 2]
+    },
+    {
+      "id": "vocab-6",
+      "name": "单词",
+      "teacher": "",
+      "location": "",
+      "color": "red",
+      "weekday": 6,
+      "periods": [3, 4]
+    },
+    {
+      "id": "numerical-analysis",
+      "name": "数值分析",
+      "teacher": "",
+      "location": "",
+      "color": "orange",
+      "weekday": 6,
+      "periods": [7, 8]
+    },
+    {
+      "id": "cet6-6",
+      "name": "英语六级",
+      "teacher": "",
+      "location": "",
+      "color": "gold",
+      "weekday": 6,
+      "periods": [12, 13]
+    },
+    {
+      "id": "circuit-7",
+      "name": "电路",
+      "teacher": "",
+      "location": "",
+      "color": "volcano",
+      "weekday": 7,
+      "periods": [1, 2]
+    },
+    {
+      "id": "vocab-7",
+      "name": "单词",
+      "teacher": "",
+      "location": "",
+      "color": "red",
+      "weekday": 7,
+      "periods": [3, 4]
+    },
+    {
+      "id": "machine-learning",
+      "name": "机器学习",
+      "teacher": "",
+      "location": "",
+      "color": "purple",
+      "weekday": 7,
+      "periods": [7, 8, 9]
+    },
+    {
+      "id": "cet6-7",
+      "name": "英语六级",
+      "teacher": "",
+      "location": "",
+      "color": "gold",
+      "weekday": 7,
       "periods": [12, 13]
     }
   ]

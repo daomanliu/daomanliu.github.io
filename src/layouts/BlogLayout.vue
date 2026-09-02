@@ -4,13 +4,14 @@
     <header class="blog-header">
       <div class="header-inner">
         <router-link to="/" class="brand">
-          <img :src="cfg.avatar" alt="avatar" class="brand-avatar" />
+          <img ref="avatarRef" :src="cfg.avatar" alt="avatar" class="brand-avatar" />
           <span class="brand-title">{{ cfg.title }}</span>
         </router-link>
         <nav class="nav">
           <router-link to="/" class="nav-link">首页</router-link>
           <template v-if="auth.isLoggedIn">
             <router-link to="/admin" class="nav-link">后台</router-link>
+            <router-link to="/schedule" class="nav-link">课表查询</router-link>
             <span class="nav-user">{{ auth.user?.nickname || cfg.author }}</span>
             <a-button size="small" @click="handleLogout">
               <LogoutOutlined /> 退出登录
@@ -33,24 +34,33 @@
       </div>
       <div>© {{ year }} {{ cfg.author }} · Powered by Vue 3 + GitHub Pages</div>
     </footer>
+
+    <!-- 拴在头像下的标签云挂件（仅首页显示） -->
+    <TetherTagCloud v-if="isHome" :anchor-el="avatarRef" />
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { blogConfig as cfg } from '@/config/blog'
 import { LogoutOutlined } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
+import TetherTagCloud from '@/components/TetherTagCloud.vue'
 
 const auth = useAuthStore()
 const router = useRouter()
 const route = useRoute()
 const year = new Date().getFullYear()
 
+// 头像元素 ref，作为绳子锚点
+const avatarRef = ref(null)
+
 // 后台编辑页用宽布局，撑满屏幕
 const isWide = computed(() => !!route.meta.wide)
+// 标签云挂件只在首页显示
+const isHome = computed(() => route.name === 'home')
 
 function handleLogout() {
   auth.logout()
@@ -77,7 +87,8 @@ function handleLogout() {
   border-bottom: 1px solid #eee;
   position: sticky;
   top: 0;
-  z-index: 10;
+  /* 提到 50，高于绳子挂件(45/46)，让头像盖住绳子起点和锚点，绳子从头像后面"长出来" */
+  z-index: 50;
 }
 .header-inner {
   max-width: none;

@@ -32,6 +32,12 @@ const routes = [
         name: 'admin',
         component: () => import('@/views/AdminView.vue'),
         meta: { requiresAuth: true, title: '后台管理', wide: true }
+      },
+      {
+        path: 'schedule',
+        name: 'schedule',
+        component: () => import('@/views/ScheduleView.vue'),
+        meta: { requiresAuth: true, title: '课表查询' }
       }
     ]
   },

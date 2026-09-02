@@ -6,26 +6,21 @@
       <p class="hero-subtitle">{{ cfg.subtitle }}</p>
     </section>
 
-    <!-- 搜索 + 标签筛选 -->
+    <!-- 搜索 -->
     <div class="filter-bar">
       <a-input-search
         v-model:value="store.searchQuery"
         placeholder="搜索文章标题 / 摘要 / 标签"
         allow-clear
-        style="max-width: 320px"
+        style="max-width: 360px"
+        @search="onSearch"
       />
     </div>
-    <div class="tag-bar" v-if="store.allTags.length">
-      <a-checkable-tag
-        :checked="!store.activeTag"
-        @change="store.activeTag = ''"
-      >全部</a-checkable-tag>
-      <a-checkable-tag
-        v-for="t in store.allTags"
-        :key="t.name"
-        :checked="store.activeTag === t.name"
-        @change="store.activeTag = store.activeTag === t.name ? '' : t.name"
-      >{{ t.name }} ({{ t.count }})</a-checkable-tag>
+
+    <!-- 当前筛选提示 -->
+    <div v-if="store.activeTag" class="active-filter">
+      已按标签 <b>{{ store.activeTag }}</b> 筛选，共 {{ store.publishedPosts.length }} 篇
+      <a class="clear-btn" @click="store.activeTag = ''">清除</a>
     </div>
 
     <!-- 文章列表 -->
@@ -45,7 +40,7 @@
           </div>
         </article>
       </div>
-      <a-empty v-else description="暂无文章" style="padding: 64px 0" />
+      <a-empty v-else description="没有匹配的文章" style="padding: 64px 0" />
     </a-spin>
   </div>
 </template>
@@ -61,15 +56,21 @@ const router = useRouter()
 
 onMounted(() => store.loadIndex())
 
+function onSearch() {
+  // 搜索时清掉标签筛选，两者同时生效容易筛出 0 条让人困惑
+  if (store.searchQuery.trim()) store.activeTag = ''
+}
+
 function goPost(slug) {
   router.push({ name: 'post', params: { slug } })
 }
 </script>
 
 <style scoped>
+/* 标题居中 */
 .hero {
   text-align: center;
-  padding: 40px 0 32px;
+  padding: 40px 0 16px;
 }
 .hero-title {
   font-size: 32px;
@@ -81,17 +82,27 @@ function goPost(slug) {
   color: #888;
   margin: 0;
 }
+
+/* 文章区 */
 .filter-bar {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 }
-.tag-bar {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 4px;
-  margin-bottom: 24px;
+.active-filter {
+  font-size: 13px;
+  color: #666;
+  background: #f0f7ff;
+  border: 1px solid #d6e8ff;
+  border-radius: 6px;
+  padding: 8px 12px;
+  margin-bottom: 16px;
+}
+.active-filter b {
+  color: #1890ff;
+}
+.clear-btn {
+  margin-left: 8px;
+  color: #1890ff;
+  cursor: pointer;
 }
 .post-list {
   display: flex;

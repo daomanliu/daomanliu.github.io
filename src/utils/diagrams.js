@@ -2,7 +2,6 @@
 // 与 utils/markdown.js 配合：markdown.js 负责抽取代码块并生成占位 HTML，
 // 本模块的 renderDiagrams(container) 在 v-html 挂载后做异步后处理。
 import plantumlEncoder from 'plantuml-encoder'
-import DOMPurify from 'dompurify'
 
 const PLANTUML_SERVER = 'https://www.plantuml.com/plantuml/svg/'
 const MAX_CACHE = 100 // Mermaid SVG 缓存上限（按 主题+代码 键控）
@@ -18,19 +17,28 @@ function loadMermaid() {
   return mermaidPromise
 }
 
+// 主题跟随博客自身的暗色开关（html 上的 dark class），
+// 而不是系统偏好——避免系统暗色但页面浅色时出现"深色图配浅底"。
+// 如果你的博客暗色模式不是用 dark class 实现的，改成你实际的判断方式。
 function isDarkMode() {
-  return typeof window !== 'undefined'
-    && typeof window.matchMedia === 'function'
-    && window.matchMedia('(prefers-color-scheme: dark)').matches
+  return typeof document !== 'undefined'
+    && document.documentElement.classList.contains('dark')
 }
 
 // startOnLoad: false 避免 mermaid 自动扫描 DOM 与 Vue 渲染冲突；
-// 主题随系统暗色偏好切换，变化时重新 initialize。
+// htmlLabels: false 让节点文字走纯 SVG <text>，不经过 foreignObject，
+// 从根本上避免消毒/浏览器兼容导致文字丢失（flowchart 和 classDiagram 分别配置）。
 async function ensureMermaid() {
   const mermaid = await loadMermaid()
   const theme = isDarkMode() ? 'dark' : 'neutral'
   if (mermaidTheme !== theme) {
-    mermaid.initialize({ startOnLoad: false, theme })
+    mermaid.initialize({
+      startOnLoad: false,
+      theme,
+      themeVariables: { background: 'transparent' },
+      flowchart: { htmlLabels: false },
+      class: { htmlLabels: false }
+    })
     mermaidTheme = theme
   }
   return mermaid
@@ -78,7 +86,12 @@ export function mermaidPlaceholderHtml(code) {
     + `</div>`
 }
 
-// 手动调用 mermaid.render 获取 SVG 字符串；结果经 DOMPurify 消毒并缓存。
+// 缓存的是"id 占位符版本"的 SVG。
+// mermaid 生成的 SVG 内联 <style> 选择器、节点 id、url(#...) 引用都含渲染时的 id，
+// 若同一篇文档插入两段相同代码的缓存结果，会出现重复 id、样式互串（配色全乱）。
+// 因此缓存时把 id 统一换成占位符，插入页面时再换成全新唯一 id。
+const ID_PLACEHOLDER = '__MERMAID_ID__'
+
 async function renderMermaidSvg(code) {
   const theme = isDarkMode() ? 'dark' : 'neutral'
   const key = `${theme}::${code}`
@@ -89,13 +102,16 @@ async function renderMermaidSvg(code) {
   let result
   try {
     const { svg } = await mermaid.render(id, code)
-    // Mermaid 的文字标签放在 <foreignObject> 内的 HTML 元素里，节点配色依赖内联
-    // <style>，因此除了 svg 画像外还要放行 html 画像和 style 标签，否则文字会丢失。
-    const clean = DOMPurify.sanitize(svg, {
-      USE_PROFILES: { svg: true, svgFilters: true, html: true },
-      ADD_TAGS: ['style']
-    })
-    result = { ok: true, html: clean }
+    // 个人博客内容可信，SVG 不再经 DOMPurify 消毒
+    // （消毒会把 foreignObject / 嵌套 HTML 里的文字洗掉，导致图表无文字）。
+    // 先替换带前缀的 d${id}（mermaid 部分引用用此变体），再替换 id 本身，
+    // 顺序不能反，否则后者会先吃掉前者里的 id 部分
+    result = {
+      ok: true,
+      html: svg
+        .replaceAll(`d${id}`, `d${ID_PLACEHOLDER}`)
+        .replaceAll(id, ID_PLACEHOLDER)
+    }
   } catch (e) {
     result = { ok: false, message: (e && e.message) || String(e) }
     // mermaid 渲染失败时可能在 body 下残留临时节点，按 id 清理
@@ -128,7 +144,8 @@ export async function renderDiagrams(container) {
     }
     const res = await renderMermaidSvg(code)
     if (res.ok) {
-      el.innerHTML = res.html
+      // 插入前把占位符换成全新唯一 id，保证页面内无重复 id
+      el.innerHTML = res.html.replaceAll(ID_PLACEHOLDER, uniqueId())
     } else {
       el.classList.add('diagram-error')
       el.innerHTML = errorInnerHtml('Mermaid 图表渲染失败', res.message)

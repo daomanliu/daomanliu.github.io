@@ -234,6 +234,7 @@
 import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { usePostsStore } from '@/stores/posts'
 import { renderMarkdown } from '@/utils/markdown'
+import { renderDiagrams } from '@/utils/diagrams'
 import { parsePost, stringifyPost } from '@/utils/frontmatter'
 import { message } from 'ant-design-vue'
 import {
@@ -370,6 +371,11 @@ const isLocal = computed(() => localKind.value === 'draft' || localKind.value ==
 // 已发布文章不允许改文件名（改了等于另一篇），草稿/新建可以随便改
 const isCurrentPublished = computed(() => !!currentSlug.value && store.isPublished(currentSlug.value))
 const renderedHtml = computed(() => renderMarkdown(content.value || ''))
+
+// 预览 v-html 更新后异步渲染 Mermaid 图表并处理 PlantUML 加载失败
+watch(renderedHtml, () => {
+  if (previewEl.value) renderDiagrams(previewEl.value)
+}, { flush: 'post' })
 
 onMounted(() => {
   store.loadIndex()

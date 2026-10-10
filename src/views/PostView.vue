@@ -9,7 +9,7 @@
             <a-tag v-for="t in post.meta.tags" :key="t" color="blue">{{ t }}</a-tag>
           </div>
         </div>
-        <div class="post-content markdown-body" v-html="html"></div>
+        <div ref="contentEl" class="post-content markdown-body" v-html="html"></div>
         <div class="post-nav">
           <a-button @click="router.push('/')"><ArrowLeftOutlined /> 返回首页</a-button>
         </div>
@@ -28,6 +28,7 @@ import { ref, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { usePostsStore } from '@/stores/posts'
 import { renderMarkdown } from '@/utils/markdown'
+import { renderDiagrams } from '@/utils/diagrams'
 import { ArrowLeftOutlined } from '@ant-design/icons-vue'
 
 const route = useRoute()
@@ -36,9 +37,19 @@ const store = usePostsStore()
 
 const post = ref(null)
 const loading = ref(true)
+const contentEl = ref(null)
 const slug = computed(() => String(route.params.slug || ''))
 
 const html = computed(() => (post.value ? renderMarkdown(post.value.content) : ''))
+
+// v-html 更新后异步渲染 Mermaid 图表并处理 PlantUML 加载失败
+watch(html, () => {
+  renderDiagramsAfterUpdate()
+}, { flush: 'post' })
+
+async function renderDiagramsAfterUpdate() {
+  if (contentEl.value) await renderDiagrams(contentEl.value)
+}
 
 watch(slug, async (s) => {
   loading.value = true

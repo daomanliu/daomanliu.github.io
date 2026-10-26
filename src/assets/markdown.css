@@ -47,3 +47,35 @@
   .markdown-body .diagram-error-title { color: #ff7875; }
   .markdown-body .diagram-error-detail { color: #ffa39e; }
 }
+
+/* 嵌入内容（<iframe>：B 站 / YouTube 等，逻辑见 utils/embed.js） */
+.markdown-body iframe.markdown-embed {
+  display: block;
+  max-width: 100%;
+  margin: 18px auto;
+  border: 0;
+  border-radius: 8px;
+}
+/* 视频站：跟随正文宽度按 16:9 自适应（想固定尺寸可用 style 覆盖） */
+.markdown-body iframe.markdown-embed.embed-video {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  background: #000;
+}
+/* 来源不在白名单时替换成的提示 */
+.markdown-body .markdown-embed-fallback {
+  display: block;
+  margin: 16px 0;
+  padding: 10px 14px;
+  border: 1px dashed #ffd591;
+  background: #fffbe6;
+  border-radius: 8px;
+  color: #ad6800;
+  font-size: 14px;
+  word-break: break-all;
+}
+.markdown-body .markdown-embed-fallback a { color: #1890ff; }
+@media (prefers-color-scheme: dark) {
+  .markdown-body .markdown-embed-fallback { background: #2b2111; border-color: #5c4813; color: #ffd591; }
+}

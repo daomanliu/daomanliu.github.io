@@ -4,6 +4,7 @@ import DOMPurify from 'dompurify'
 import katex from 'katex'
 import 'katex/dist/katex.min.css'
 import { plantumlHtml, mermaidPlaceholderHtml } from '@/utils/diagrams'
+import { EMBED_SANITIZE_OPTIONS, applyEmbedGuards } from '@/utils/embed'
 
 const MATH_PLACEHOLDER = /@@KATEX(\d+)@@/g
 const DIAGRAM_PLACEHOLDER = /@@DIAGRAM(\d+)@@/g
@@ -51,11 +52,23 @@ function renderMath(markdown) {
   return { text, store }
 }
 
+// 独立的 DOMPurify 实例：iframe 白名单与校验钩子只作用于 Markdown 渲染，
+// 不影响站点里其它地方对 DOMPurify 的调用。
+let purifier = null
+function getPurifier() {
+  if (!purifier) {
+    purifier = typeof window === 'undefined' ? DOMPurify : DOMPurify(window)
+    purifier.addHook('afterSanitizeAttributes', applyEmbedGuards)
+  }
+  return purifier
+}
+
 export function renderMarkdown(md) {
   const { text: noDiagrams, store: diagrams } = extractDiagrams(md)
   const { text, store } = renderMath(noDiagrams)
   let html = marked.parse(text, { breaks: true })
-  html = DOMPurify.sanitize(html)
+  // 放行 <iframe>（B 站等），来源校验在 applyEmbedGuards 中完成
+  html = getPurifier().sanitize(html, EMBED_SANITIZE_OPTIONS)
   // 还原公式 HTML（KaTeX 输出由我们生成，安全可控）
   html = html.replace(MATH_PLACEHOLDER, (_, i) => store[Number(i)] || '')
   // 还原图表 HTML（在净化之后插入，避免 <img>/占位结构被改写；

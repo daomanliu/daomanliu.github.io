@@ -56,6 +56,19 @@ git add -A && git commit -m "新文章" && git push
 
 也可以直接在 GitHub 网页上 Add file 新建 md，效果一样。
 
+### 嵌入 B 站等外部内容
+
+正文里可以直接写 `<iframe>`，B 站分享面板里的「嵌入代码」原样粘过来即可：
+
+```html
+<iframe src="//player.bilibili.com/player.html?bvid=BV1GJ411x7h7&page=1"
+        scrolling="no" frameborder="no" allowfullscreen="true"
+        width="800" height="450"></iframe>
+```
+
+- 视频播放器会跟随正文宽度按 16:9 自适应；想固定尺寸就在标签里加 `style="width:800px;height:450px"`。
+- 只放行白名单站点（B 站、YouTube、优酷、腾讯视频、网易云音乐、QQ 音乐等，见 `src/utils/embed.js` 的 `EMBED_HOSTS`）。其他来源会显示一条可点击的提示而不是静默消失；要支持新站点，把域名加进列表即可。
+
 ## 部署说明
 
 - 仓库：`daomanliu.github.io`（用户主页仓库，`vite.config.js` 中 `base: '/'`）

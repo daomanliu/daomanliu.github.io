@@ -1,0 +1,636 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>人物特征 · 47 词交互卡</title>
+<style>
+  :root{
+    --bg:#f4eee2; --bg2:#eee5d4; --card:#fffdf8; --ink:#26201a; --ink2:#4a4038;
+    --muted:#8a7c6c; --line:#e3d7c3; --ok:#3f8a5c; --bad:#c04a5a;
+    --shadow:0 1px 2px rgba(60,45,25,.06),0 10px 26px -14px rgba(60,45,25,.30);
+    --serif:"Iowan Old Style","Palatino Linotype","Songti SC","Source Han Serif SC",Georgia,serif;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    --mono:"SF Mono",Consolas,Monaco,"Courier New",monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#141210; --bg2:#1a1714; --card:#1e1a16; --ink:#f1e9dc; --ink2:#c9bfae;
+      --muted:#8f8373; --line:#302a23;
+      --shadow:0 1px 2px rgba(0,0,0,.45),0 12px 30px -16px rgba(0,0,0,.9);
+    }
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0}
+  body{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;overflow:hidden}
+  body::before{content:'';position:fixed;inset:0;pointer-events:none;
+    background:radial-gradient(1100px 520px at 12% -8%,rgba(210,105,60,.12),transparent 62%),
+               radial-gradient(900px 480px at 108% -4%,rgba(61,126,166,.12),transparent 62%)}
+  .app{position:relative;height:100%;display:flex;flex-direction:column;min-height:0}
+  :focus-visible{outline:2px solid var(--ink);outline-offset:2px;border-radius:8px}
+
+  /* ---------- 顶部 ---------- */
+  .topbar{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;padding:18px 22px 10px;flex-wrap:wrap}
+  .eyebrow{font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+  h1{margin:5px 0 3px;font-family:var(--serif);font-size:27px;font-weight:700;letter-spacing:.01em;display:flex;align-items:center;gap:9px}
+  h1 em{font-style:normal;font-size:11px;letter-spacing:.08em;color:var(--muted);border:1px solid var(--line);padding:2px 8px;border-radius:999px;font-family:var(--sans)}
+  .sub{margin:0;font-size:12.5px;color:var(--muted)}
+  .ring{position:relative;width:64px;height:64px;flex:0 0 auto}
+  .ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+  .ring circle{fill:none;stroke-width:5;stroke-linecap:round}
+  .ring .track{stroke:var(--line)}
+  .ring .bar{stroke:#d2693c;stroke-dasharray:150.8;stroke-dashoffset:150.8;transition:stroke-dashoffset .5s ease}
+  .ring-t{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:1px;font-size:10px;color:var(--muted)}
+  .ring-t b{font-size:16px;color:var(--ink);font-variant-numeric:tabular-nums}
+
+  /* ---------- 工具条 ---------- */
+  .toolbar{display:flex;gap:9px;align-items:center;padding:0 22px 9px;flex-wrap:wrap}
+  .search{flex:1 1 230px;display:flex;align-items:center;gap:8px;height:36px;padding:0 10px;
+    background:var(--card);border:1px solid var(--line);border-radius:10px;color:var(--muted)}
+  .search input{flex:1;min-width:0;border:0;background:none;outline:none;font:inherit;font-size:13.5px;color:var(--ink)}
+  .search input::placeholder{color:var(--muted)}
+  .search kbd{font-size:10px;border:1px solid var(--line);border-radius:4px;padding:1px 5px;color:var(--muted)}
+  .modes{display:flex;padding:3px;gap:2px;background:var(--card);border:1px solid var(--line);border-radius:10px}
+  .modes button{border:0;background:none;font:inherit;font-size:13px;color:var(--muted);padding:5px 13px;border-radius:7px;cursor:pointer;transition:.18s}
+  .modes button:hover{color:var(--ink)}
+  .modes button.on{background:var(--ink);color:var(--bg)}
+  .switch{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--muted);cursor:pointer;user-select:none}
+  .switch input{accent-color:#d2693c}
+
+  /* ---------- 分类 chips ---------- */
+  .chips{display:flex;gap:6px;padding:0 22px 9px;overflow-x:auto;scrollbar-width:none}
+  .chips::-webkit-scrollbar{display:none}
+  .chip{display:inline-flex;align-items:center;gap:6px;white-space:nowrap;border:1px solid var(--line);
+    background:var(--card);color:var(--ink2);border-radius:999px;padding:5px 11px;font:inherit;font-size:12.5px;cursor:pointer;transition:.18s}
+  .chip:hover{border-color:var(--ink)}
+  .chip i{width:7px;height:7px;border-radius:50%;background:var(--c,#8a7c6c)}
+  .chip em{font-style:normal;font-size:10.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .chip.on{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+  .chip.on i{background:var(--bg)}
+  .chip.on em{color:var(--bg);opacity:.65}
+
+  /* ---------- 舞台 ---------- */
+  .stage{flex:1;min-height:0;overflow:auto;padding:2px 22px 18px;scrollbar-width:thin}
+  .stage::-webkit-scrollbar{width:8px}
+  .stage::-webkit-scrollbar-thumb{background:var(--line);border-radius:8px}
+
+  /* ---------- 卡片模式 ---------- */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(204px,1fr));gap:12px}
+  .card{height:206px;perspective:1000px;cursor:pointer}
+  .ci{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .55s cubic-bezier(.2,.8,.25,1)}
+  .card.flipped .ci{transform:rotateY(180deg)}
+  .face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+    border:1px solid var(--line);border-radius:14px;background:var(--card);box-shadow:var(--shadow);
+    padding:13px 14px;display:flex;flex-direction:column;overflow:hidden}
+  .face.back{transform:rotateY(180deg);padding:11px 13px}
+  .tag{align-self:flex-start;display:inline-flex;align-items:center;gap:5px;font-size:10.5px;
+    color:var(--c);background:var(--cb);border-radius:999px;padding:2px 8px}
+  .tag i{width:5px;height:5px;border-radius:50%;background:var(--c)}
+  .face.front h3{margin:auto 0 0;font-family:var(--serif);font-size:26px;font-weight:600;line-height:1.12;letter-spacing:.01em;word-break:break-word}
+  .ipa{margin:4px 0 0;font-size:11px;color:var(--muted);font-family:var(--mono);word-break:break-word}
+  .pos{margin:2px 0 0;font-size:10.5px;color:var(--muted);letter-spacing:.04em}
+  .flip{margin-top:9px;font-size:10px;color:var(--muted);opacity:.8}
+  .card.done .face.front::after{content:'✓ 掌握';position:absolute;top:11px;right:11px;font-size:9px;
+    color:var(--ok);background:rgba(63,138,92,.13);padding:2px 6px;border-radius:999px}
+  .bhead{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+  .bhead b{font-family:var(--serif);font-size:14.5px}
+  .bhead span{font-size:9.5px;color:var(--muted);white-space:nowrap}
+  .mean{list-style:none;margin:5px 0 0;padding:0;font-size:11.5px;line-height:1.55;color:var(--ink2)}
+  .mean li{position:relative;padding-left:11px}
+  .mean li::before{content:'';position:absolute;left:2px;top:7.5px;width:4px;height:4px;border-radius:50%;background:var(--c)}
+  .col{margin:6px 0 0;padding-top:5px;border-top:1px dashed var(--line);font-size:10.5px;color:var(--muted);font-style:italic;line-height:1.35}
+  .mbtn{margin-top:auto;align-self:flex-start;border:1px solid var(--line);background:var(--bg2);color:var(--ink2);
+    font:inherit;font-size:10.5px;padding:4px 9px;border-radius:7px;cursor:pointer;transition:.15s}
+  .mbtn:hover{border-color:var(--ink)}
+  .mbtn.on{background:var(--ok);border-color:var(--ok);color:#fff}
+
+  /* ---------- 列表模式 ---------- */
+  .grp{margin-bottom:15px}
+  .grp h4{display:flex;align-items:center;gap:8px;margin:0 0 6px;font-size:13px;font-weight:600}
+  .grp h4::before{content:'';width:3px;height:14px;border-radius:2px;background:var(--c)}
+  .grp h4 em{font-style:normal;font-size:10.5px;color:var(--muted);font-weight:400}
+  .grp h4 .tip{margin-left:auto;font-size:10.5px;color:var(--muted);font-weight:400}
+  .rows{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--card)}
+  .row{display:grid;grid-template-columns:26px minmax(88px,1fr) 104px 44px minmax(0,2.3fr);align-items:center;
+    gap:8px;padding:7px 12px;border-bottom:1px solid var(--line);font-size:13px}
+  .row:last-child{border-bottom:0}
+  .row .cb{width:18px;height:18px;border-radius:6px;border:1.5px solid var(--line);background:none;color:#fff;
+    font-size:10px;line-height:1;display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer}
+  .row.done .cb{background:var(--ok);border-color:var(--ok)}
+  .rw{font-family:var(--serif);font-weight:600;font-size:14.5px}
+  .ri{color:var(--muted);font-size:11px;font-family:var(--mono);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .rp{color:var(--muted);font-size:10.5px}
+  .rm{color:var(--ink2);font-size:12.5px;line-height:1.4}
+  .row.done .rw,.row.done .rm{opacity:.5}
+  @media (max-width:640px){
+    .row{grid-template-columns:24px 1fr;row-gap:1px;padding:8px 11px}
+    .ri,.rp{display:none}
+    .rm{grid-column:2;font-size:12px}
+  }
+
+  /* ---------- 测验 ---------- */
+  .quiz{max-width:600px;margin:0 auto;padding-top:6px}
+  .qhead{display:flex;justify-content:space-between;font-size:11.5px;color:var(--muted);margin-bottom:12px;font-variant-numeric:tabular-nums}
+  .qtip{margin:0 0 9px;font-size:12px;color:var(--muted);letter-spacing:.05em}
+  .qword{min-height:66px;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;
+    background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px 18px;margin-bottom:11px;box-shadow:var(--shadow)}
+  .qw{font-family:var(--serif);font-size:31px;font-weight:600}
+  .qa{color:var(--muted);font-family:var(--mono);font-size:12.5px}
+  .qm{font-size:16px;color:var(--ink);text-align:center;line-height:1.5}
+  .qopts{display:grid;gap:8px}
+  .opt{display:flex;align-items:center;gap:10px;text-align:left;font:inherit;font-size:13.5px;line-height:1.45;
+    padding:10px 13px;border-radius:11px;border:1px solid var(--line);background:var(--card);color:var(--ink2);cursor:pointer;transition:.15s}
+  .opt:hover{border-color:var(--ink);transform:translateX(2px)}
+  .opt i{font-style:normal;width:20px;height:20px;flex:0 0 auto;border-radius:6px;background:var(--bg2);color:var(--muted);
+    display:flex;align-items:center;justify-content:center;font-size:11px}
+  .opt.ok{border-color:var(--ok);background:rgba(63,138,92,.12);color:var(--ink)}
+  .opt.ok i{background:var(--ok);color:#fff}
+  .opt.no{border-color:var(--bad);background:rgba(192,74,90,.12);color:var(--ink)}
+  .opt.no i{background:var(--bad);color:#fff}
+  .qfoot{display:flex;align-items:center;gap:12px;margin-top:11px;min-height:24px;font-size:12px}
+  .ghost{border:1px solid var(--line);background:var(--card);color:var(--muted);font:inherit;font-size:11.5px;padding:5px 12px;border-radius:8px;cursor:pointer}
+  .ghost:hover{color:var(--ink);border-color:var(--ink)}
+
+  /* ---------- 空态 / 底栏 ---------- */
+  .empty{padding:52px 10px;text-align:center;color:var(--muted)}
+  .empty b{display:block;margin-bottom:6px;font-size:14.5px;color:var(--ink2)}
+  .empty p{margin:0;font-size:12.5px;line-height:1.6}
+  .statusbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+    padding:8px 22px;border-top:1px solid var(--line);background:var(--bg2);font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .statusbar .acts{display:flex;align-items:center;gap:14px}
+  .linkbtn{border:0;background:none;font:inherit;font-size:11.5px;color:var(--muted);cursor:pointer;text-decoration:underline dotted}
+  .linkbtn:hover{color:var(--ink)}
+  @media (prefers-reduced-motion: reduce){
+    .ci,.opt,.chip,.modes button{transition:none !important}
+  }
+  @media (max-width:560px){
+    .topbar{padding:14px 16px 8px}
+    .toolbar,.chips{padding-left:16px;padding-right:16px}
+    .stage{padding:0 16px 14px}
+    .statusbar{padding:8px 16px}
+    h1{font-size:23px}
+    .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+    .card{height:196px}
+    .face.front h3{font-size:22px}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="head">
+      <div class="eyebrow">附录二 · 认知词汇 / 人物特征</div>
+      <h1>人物特征<em>47 WORDS</em></h1>
+      <p class="sub">外形 · 心智 · 善恶 · 气质 · 抽象 —— 翻卡记忆，测验答对自动记账</p>
+    </div>
+    <div class="ring" title="已掌握进度">
+      <svg viewBox="0 0 60 60" aria-hidden="true">
+        <circle class="track" cx="30" cy="30" r="24"></circle>
+        <circle class="bar" id="ringBar" cx="30" cy="30" r="24"></circle>
+      </svg>
+      <div class="ring-t"><b id="ringNum">0</b><span>/47</span></div>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <label class="search">
+      <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.6-3.6"></path>
+      </svg>
+      <input id="q" type="search" placeholder="搜单词 / 音标 / 释义，如 秃、/bruːtl/" autocomplete="off" spellcheck="false">
+      <kbd>/</kbd>
+    </label>
+    <div class="modes" role="tablist" aria-label="视图模式">
+      <button type="button" data-mode="cards" class="on">卡片</button>
+      <button type="button" data-mode="list">列表</button>
+      <button type="button" data-mode="quiz">测验</button>
+    </div>
+    <label class="switch"><input id="onlyNew" type="checkbox"> 只看未掌握</label>
+  </div>
+
+  <nav class="chips" id="chips" aria-label="分类筛选"></nav>
+  <main class="stage" id="stage"></main>
+
+  <footer class="statusbar">
+    <span id="stat">共 47 词</span>
+    <span class="acts">
+      <span>快捷键：/ 搜索 · Esc 清空 · 1-4 选项</span>
+      <button type="button" class="linkbtn" id="reset">重置掌握进度</button>
+    </span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  'use strict';
+
+  var KEY = 'personality47.mastered.v1';
+
+  var CATS = [
+    { k:'looks',    n:'外貌形体', c:'#d2693c', cb:'rgba(210,105,60,.13)',  tip:'长相、体型、裸与秃' },
+    { k:'mind',     n:'智力心智', c:'#3d7ea6', cb:'rgba(61,126,166,.13)',  tip:'机灵、迟钝、文盲、幼稚' },
+    { k:'virtue',   n:'性情之善', c:'#3f8a5c', cb:'rgba(63,138,92,.13)',   tip:'和蔼、真诚、宽容、勤奋' },
+    { k:'vice',     n:'性情之恶', c:'#a83b56', cb:'rgba(168,59,86,.13)',   tip:'残忍、粗鲁、虚伪、胆怯' },
+    { k:'temper',   n:'气质状态', c:'#7161a6', cb:'rgba(113,97,166,.13)',  tip:'古怪、乏味、未婚、世故' },
+    { k:'abstract', n:'抽象特质', c:'#97763a', cb:'rgba(151,118,58,.13)',  tip:'精力、缺点、贪婪、伪善' }
+  ];
+
+  var WORDS = [
+    { w:'blonde', ipa:'/bl\u0252nd/', pos:'a. / n.', cat:'looks',
+      m:['a.（头发）金黄色的','n. 金发女郎'], col:'a blonde girl / blonde hair' },
+    { w:'curl', ipa:'/k\u025c\u02d0l/', pos:'n. / v.', cat:'looks',
+      m:['n. ①（一缕）鬈发 ②卷曲（物）','v. ①卷 ②（使）蜷缩'], col:'curly hair / a curl of smoke' },
+    { w:'blush', ipa:'/bl\u028c\u0283/', pos:'vi. / n.', cat:'looks',
+      m:['vi. 脸红','n. 脸红'], col:'blush with shame' },
+    { w:'gorgeous', ipa:'/\u02c8\u0261\u0254\u02d0d\u0292\u0259s/', pos:'a.', cat:'looks',
+      m:['①极其漂亮的','②令人十分愉快的'], col:'a gorgeous view' },
+    { w:'dwarf', ipa:'/dw\u0254\u02d0f/', pos:'n. / vt.', cat:'looks',
+      m:['n. 矮子，侏儒','vt. 使显得矮小，使相形见绌'], col:'be dwarfed by sth' },
+    { w:'naked', ipa:'/\u02c8ne\u026ak\u026ad/', pos:'a.', cat:'looks',
+      m:['①裸体的','②裸露的'], col:'the naked eye（肉眼）' },
+    { w:'nude', ipa:'/nju\u02d0d/', pos:'a. / n.', cat:'looks',
+      m:['a. ①（尤指艺术人像）裸体的 ②（美）肉色的','n. 裸体艺术品'], col:'a nude painting' },
+    { w:'bald', ipa:'/b\u0254\u02d0ld/', pos:'a.', cat:'looks',
+      m:['①秃头的','②简单的'], col:'go bald' },
+    { w:'trim', ipa:'/tr\u026am/', pos:'a. / vt. / n.', cat:'looks',
+      m:['a.（人）苗条的','vt./n. 修剪'], col:'a trim figure（苗条的身材）' },
+    { w:'slender', ipa:'/\u02c8slend\u0259(r)/', pos:'a.', cat:'looks',
+      m:['①苗条的，修长的','②细的，窄的','③微薄的'], col:'a slender chance（微渺的机会）' },
+    { w:'masculine', ipa:'/\u02c8m\u00e6skj\u0259l\u026an/', pos:'a.', cat:'looks',
+      m:['男子汉的'], col:'a deep masculine voice' },
+
+    { w:'shrewd', ipa:'/\u0283ru\u02d0d/', pos:'a.', cat:'mind',
+      m:['机灵的，敏锐的'], col:'a shrewd businessman' },
+    { w:'clumsy', ipa:'/\u02c8kl\u028cmzi/', pos:'a.', cat:'mind',
+      m:['①笨拙的','②不得体的'], col:'a clumsy apology' },
+    { w:'retarded', ipa:'/r\u026a\u02c8t\u0251\u02d0d\u026ad/', pos:'a.', cat:'mind',
+      m:['弱智的'], col:'mentally retarded（现多回避使用）' },
+    { w:'illiterate', ipa:'/\u026a\u02c8l\u026at\u0259r\u0259t/', pos:'n. / a.', cat:'mind',
+      m:['n. 文盲','a. 文盲的'], col:'computer illiterate（电脑盲）' },
+    { w:'juvenile', ipa:'/\u02c8d\u0292u\u02d0v\u0259na\u026al/', pos:'a. / n.', cat:'mind',
+      m:['a. ①少年的 ②幼稚的','n. 未成年人'], col:'juvenile crime（青少年犯罪）' },
+    { w:'idiot', ipa:'/\u02c8\u026adi\u0259t/', pos:'n.', cat:'mind',
+      m:['①白痴','②傻子，笨蛋'], col:'You idiot!' },
+    { w:'cunning', ipa:'/\u02c8k\u028cn\u026a\u014b/', pos:'a. / n.', cat:'mind',
+      m:['a. ①狡猾的 ②灵巧的','n. 狡猾'], col:'a cunning plan' },
+
+    { w:'amiable', ipa:'/\u02c8e\u026ami\u0259bl/', pos:'a.', cat:'virtue',
+      m:['和蔼可亲的'], col:'an amiable host' },
+    { w:'benevolent', ipa:'/b\u0259\u02c8nev\u0259l\u0259nt/', pos:'a.', cat:'virtue',
+      m:['仁慈的'], col:'a benevolent smile' },
+    { w:'ardent', ipa:'/\u02c8\u0251\u02d0dnt/', pos:'a.', cat:'virtue',
+      m:['热烈的'], col:'an ardent supporter' },
+    { w:'earnest', ipa:'/\u02c8\u025c\u02d0n\u026ast/', pos:'a.', cat:'virtue',
+      m:['真诚的，热切的'], col:'in earnest（认真地）' },
+    { w:'sincere', ipa:'/s\u026an\u02c8s\u026a\u0259(r)/', pos:'a.', cat:'virtue',
+      m:['①诚挚的','②诚实的'], col:'sincere thanks' },
+    { w:'lenient', ipa:'/\u02c8li\u02d0ni\u0259nt/', pos:'a.', cat:'virtue',
+      m:['宽容的'], col:'be lenient with sb' },
+    { w:'lavish', ipa:'/\u02c8l\u00e6v\u026a\u0283/', pos:'a. / vt.', cat:'virtue',
+      m:['a. ①大量的 ②慷慨的','vt. 慷慨地给予'], col:'lavish praise on sb' },
+    { w:'diligent', ipa:'/\u02c8d\u026al\u026ad\u0292\u0259nt/', pos:'a.', cat:'virtue',
+      m:['勤奋的'], col:'a diligent student' },
+    { w:'meticulous', ipa:'/m\u0259\u02c8t\u026akj\u0259l\u0259s/', pos:'a.', cat:'virtue',
+      m:['极细致的，小心翼翼的'], col:'meticulous about details' },
+    { w:'eminent', ipa:'/\u02c8em\u026an\u0259nt/', pos:'a.', cat:'virtue',
+      m:['①（人）出众的','②（品质）杰出的'], col:'an eminent scientist' },
+
+    { w:'brutal', ipa:'/\u02c8bru\u02d0tl/', pos:'a.', cat:'vice',
+      m:['①残忍的','②冷酷的'], col:'a brutal attack' },
+    { w:'coarse', ipa:'/k\u0254\u02d0s/', pos:'a.', cat:'vice',
+      m:['①粗鲁无礼的','②（皮肤或布料）粗糙的','③粗的'], col:'coarse language（粗话）' },
+    { w:'reckless', ipa:'/\u02c8rekl\u0259s/', pos:'a.', cat:'vice',
+      m:['鲁莽的'], col:'reckless driving' },
+    { w:'ruthless', ipa:'/\u02c8ru\u02d0\u03b8l\u0259s/', pos:'a.', cat:'vice',
+      m:['无情的，残忍的'], col:'a ruthless competitor' },
+    { w:'coward', ipa:'/\u02c8ka\u028a\u0259d/', pos:'n.', cat:'vice',
+      m:['胆怯者，懦夫'], col:'call sb a coward' },
+    { w:'sinister', ipa:'/\u02c8s\u026an\u026ast\u0259(r)/', pos:'a.', cat:'vice',
+      m:['邪恶的'], col:'a sinister look' },
+    { w:'nasty', ipa:'/\u02c8n\u0251\u02d0sti/', pos:'a.', cat:'vice',
+      m:['①令人讨厌的','②恶意的'], col:'a nasty remark' },
+    { w:'wicked', ipa:'/\u02c8w\u026ak\u026ad/', pos:'a.', cat:'vice',
+      m:['①邪恶的','②淘气的，顽皮的','③极好的'], col:'a wicked sense of humour' },
+    { w:'naughty', ipa:'/\u02c8n\u0254\u02d0ti/', pos:'a.', cat:'vice',
+      m:['（尤指儿童）顽皮的，淘气的'], col:'a naughty child' },
+    { w:'idle', ipa:'/\u02c8a\u026adl/', pos:'a.', cat:'vice',
+      m:['①懒惰的','②空闲的'], col:'lie idle（闲置）' },
+
+    { w:'eccentric', ipa:'/\u026ak\u02c8sentr\u026ak/', pos:'a. / n.', cat:'temper',
+      m:['a. 古怪的，异乎寻常的','n. 古怪的人'], col:'an eccentric millionaire' },
+    { w:'tedious', ipa:'/\u02c8ti\u02d0di\u0259s/', pos:'a.', cat:'temper',
+      m:['乏味的，单调的'], col:'a tedious lecture' },
+    { w:'single', ipa:'/\u02c8s\u026a\u014b\u0261l/', pos:'a. / n. / v.', cat:'temper',
+      m:['a. ①单一的 ②未婚的','n. 单程票','v.（out）选出'], col:'remain single / a single ticket' },
+    { w:'cosmopolitan', ipa:'/\u02cck\u0252zm\u0259\u02c8p\u0252l\u026at\u0259n/', pos:'a. / n.', cat:'temper',
+      m:['a. ①世界性的 ②见识广的','n. 周游世界的人'], col:'a cosmopolitan city' },
+    { w:'ego', ipa:'/\u02c8i\u02d0\u0261\u0259\u028a/', pos:'n.', cat:'temper',
+      m:['自我（意识）'], col:"hurt sb's ego" },
+
+    { w:'vigour', ipa:'/\u02c8v\u026a\u0261\u0259(r)/', pos:'n.', cat:'abstract',
+      m:['精力（亦作 vigor）'], col:'full of vigour' },
+    { w:'flaw', ipa:'/fl\u0254\u02d0/', pos:'n.', cat:'abstract',
+      m:['缺点'], col:'a fatal flaw' },
+    { w:'greed', ipa:'/\u0261ri\u02d0d/', pos:'n.', cat:'abstract',
+      m:['①贪心，贪婪','②贪吃'], col:'greed for money' },
+    { w:'hypocrisy', ipa:'/h\u026a\u02c8p\u0252kr\u0259si/', pos:'n.', cat:'abstract',
+      m:['伪善，虚伪'], col:'the hypocrisy of it' }
+  ];
+
+  var BY = {};
+  CATS.forEach(function(c){ BY[c.k] = c; });
+
+  var stage = document.getElementById('stage');
+  var chipsEl = document.getElementById('chips');
+  var qEl = document.getElementById('q');
+  var onlyNewEl = document.getElementById('onlyNew');
+  var ringBar = document.getElementById('ringBar');
+  var ringNum = document.getElementById('ringNum');
+  var statEl = document.getElementById('stat');
+  var ARC = 150.8;
+
+  var state = { mode:'cards', cat:'all', q:'', onlyNew:false };
+  var mastered = new Set(loadMastered());
+  var quiz = { right:0, total:0, streak:0, locked:false, cur:null };
+  var timer = null;
+
+  function loadMastered(){
+    try { var a = JSON.parse(localStorage.getItem(KEY) || '[]'); return Array.isArray(a) ? a : []; }
+    catch (e) { return []; }
+  }
+  function saveMastered(){
+    try { localStorage.setItem(KEY, JSON.stringify(Array.from(mastered))); } catch (e) {}
+  }
+  function esc(s){
+    return String(s).replace(/[&<>"]/g, function(ch){
+      return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[ch];
+    });
+  }
+  function shuffle(a){
+    a = a.slice();
+    for (var i = a.length - 1; i > 0; i--){
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+  function hit(x, q){
+    if (!q) return true;
+    return x.w.toLowerCase().indexOf(q) >= 0 ||
+           x.ipa.toLowerCase().indexOf(q) >= 0 ||
+           x.pos.toLowerCase().indexOf(q) >= 0 ||
+           x.m.join(' ').toLowerCase().indexOf(q) >= 0 ||
+           x.col.toLowerCase().indexOf(q) >= 0;
+  }
+  function pool(){
+    var q = state.q.trim().toLowerCase();
+    return WORDS.filter(function(x){
+      if (state.cat !== 'all' && x.cat !== state.cat) return false;
+      if (state.onlyNew && mastered.has(x.w)) return false;
+      return hit(x, q);
+    });
+  }
+  function countFor(cat){
+    var q = state.q.trim().toLowerCase();
+    return WORDS.filter(function(x){
+      if (cat !== 'all' && x.cat !== cat) return false;
+      if (state.onlyNew && mastered.has(x.w)) return false;
+      return hit(x, q);
+    }).length;
+  }
+
+  function paintChips(){
+    var html = '<button type="button" class="chip' + (state.cat === 'all' ? ' on' : '') +
+      '" data-cat="all">全部<em>' + countFor('all') + '</em></button>';
+    CATS.forEach(function(c){
+      html += '<button type="button" class="chip' + (state.cat === c.k ? ' on' : '') +
+        '" data-cat="' + c.k + '" style="--c:' + c.c + '"><i></i>' + c.n + '<em>' + countFor(c.k) + '</em></button>';
+    });
+    chipsEl.innerHTML = html;
+  }
+  function paintRing(){
+    var p = mastered.size / WORDS.length;
+    ringBar.style.strokeDashoffset = (ARC * (1 - p)).toFixed(1);
+    ringNum.textContent = String(mastered.size);
+  }
+  function paintStat(){
+    var n = pool().length;
+    statEl.textContent = '显示 ' + n + ' / ' + WORDS.length + ' 词 · 已掌握 ' + mastered.size + ' 词' +
+      (state.mode === 'quiz' ? ' · 测验中' : '');
+  }
+
+  function cardHTML(x){
+    var c = BY[x.cat];
+    var done = mastered.has(x.w);
+    return '<article class="card' + (done ? ' done' : '') + '" data-w="' + x.w +
+      '" style="--c:' + c.c + ';--cb:' + c.cb + '">' +
+        '<div class="ci">' +
+          '<div class="face front">' +
+            '<span class="tag"><i></i>' + c.n + '</span>' +
+            '<h3>' + esc(x.w) + '</h3>' +
+            '<p class="ipa">' + esc(x.ipa) + '</p>' +
+            '<p class="pos">' + esc(x.pos) + '</p>' +
+            '<span class="flip">点击翻转 · 看释义和搭配</span>' +
+          '</div>' +
+          '<div class="face back">' +
+            '<div class="bhead"><b>' + esc(x.w) + '</b><span>' + esc(x.pos) + '</span></div>' +
+            '<ul class="mean">' + x.m.map(function(m){ return '<li>' + esc(m) + '</li>'; }).join('') + '</ul>' +
+            '<p class="col">' + esc(x.col) + '</p>' +
+            '<button type="button" class="mbtn' + (done ? ' on' : '') + '" data-toggle="' + x.w + '">' +
+              (done ? '✓ 已掌握' : '标记掌握') + '</button>' +
+          '</div>' +
+        '</div>' +
+      '</article>';
+  }
+  function cardView(list){
+    if (!list.length) return emptyHTML();
+    return '<div class="grid">' + list.map(cardHTML).join('') + '</div>';
+  }
+  function listView(list){
+    if (!list.length) return emptyHTML();
+    var html = '';
+    CATS.forEach(function(c){
+      var items = list.filter(function(x){ return x.cat === c.k; });
+      if (!items.length) return;
+      html += '<section class="grp" style="--c:' + c.c + '">' +
+        '<h4>' + c.n + '<em>' + items.length + '</em><span class="tip">' + c.tip + '</span></h4>' +
+        '<div class="rows">' + items.map(rowHTML).join('') + '</div></section>';
+    });
+    return html;
+  }
+  function rowHTML(x){
+    var done = mastered.has(x.w);
+    return '<div class="row' + (done ? ' done' : '') + '" data-w="' + x.w + '">' +
+      '<button type="button" class="cb" data-toggle="' + x.w + '" aria-label="标记掌握">' + (done ? '✓' : '') + '</button>' +
+      '<span class="rw">' + esc(x.w) + '</span>' +
+      '<span class="ri">' + esc(x.ipa) + '</span>' +
+      '<span class="rp">' + esc(x.pos) + '</span>' +
+      '<span class="rm">' + esc(x.m.join('；')) + '</span>' +
+    '</div>';
+  }
+  function emptyHTML(){
+    return '<div class="empty"><b>没有匹配到的单词</b><p>换个关键词，或点「全部」把 47 个词都放回来。</p></div>';
+  }
+
+  function toggleMastered(w){
+    if (mastered.has(w)) mastered.delete(w); else mastered.add(w);
+    saveMastered(); paintRing(); paintStat(); paintChips();
+    var on = mastered.has(w);
+    Array.prototype.forEach.call(document.querySelectorAll('[data-toggle="' + w + '"]'), function(btn){
+      var card = btn.closest('.card');
+      if (card) card.classList.toggle('done', on);
+      var row = btn.closest('.row');
+      if (row) row.classList.toggle('done', on);
+      if (btn.classList.contains('mbtn')){
+        btn.classList.toggle('on', on);
+        btn.textContent = on ? '✓ 已掌握' : '标记掌握';
+      }
+      if (btn.classList.contains('cb')){
+        btn.textContent = on ? '✓' : '';
+      }
+    });
+  }
+
+  function mountQuiz(){
+    if (timer){ clearTimeout(timer); timer = null; }
+    quiz.right = 0; quiz.total = 0; quiz.streak = 0; quiz.locked = false; quiz.cur = null;
+    stage.innerHTML =
+      '<div class="quiz">' +
+        '<div class="qhead"><span id="qScore">答对 0 / 0</span><span id="qStreak">连击 0</span></div>' +
+        '<p class="qtip" id="qTip">选出正确的中文释义</p>' +
+        '<div class="qword" id="qWord"></div>' +
+        '<div class="qopts" id="qOpts"></div>' +
+        '<div class="qfoot"><button type="button" class="ghost" id="qSkip">跳过</button><span id="qMsg"></span></div>' +
+      '</div>';
+    document.getElementById('qSkip').addEventListener('click', function(){
+      if (!quiz.locked) newQuestion();
+    });
+    newQuestion();
+  }
+
+  function newQuestion(){
+    if (state.mode !== 'quiz') return;
+    var list = pool();
+    var wordBox = document.getElementById('qWord');
+    var optsBox = document.getElementById('qOpts');
+    var tipBox = document.getElementById('qTip');
+    if (!wordBox || !optsBox || !tipBox) return;
+    if (list.length < 4){
+      wordBox.innerHTML = '';
+      tipBox.textContent = '';
+      optsBox.innerHTML = '<div class="empty"><b>单词不够出题</b><p>当前筛选下只有 ' + list.length +
+        ' 个词，至少需要 4 个。换个分类或清空搜索再试。</p></div>';
+      return;
+    }
+    var cur = list[Math.floor(Math.random() * list.length)];
+    var dir = Math.random() < 0.5;
+    var others = shuffle(WORDS.filter(function(x){
+      return x.w !== cur.w && x.m[0] !== cur.m[0];
+    })).slice(0, 3);
+    var opts = shuffle([cur].concat(others));
+    quiz.cur = cur; quiz.locked = false;
+    tipBox.textContent = dir ? '选出正确的中文释义' : '哪个单词是这个意思';
+    wordBox.innerHTML = dir
+      ? '<span class="qw">' + esc(cur.w) + '</span><span class="qa">' + esc(cur.ipa) + '</span>'
+      : '<span class="qm">' + esc(cur.m[0]) + '</span>';
+    var msg = document.getElementById('qMsg');
+    if (msg) msg.textContent = '';
+    optsBox.innerHTML = opts.map(function(o, i){
+      return '<button type="button" class="opt" data-w="' + esc(o.w) + '">' +
+        '<i>' + (i + 1) + '</i><span>' + esc(dir ? o.m[0] : o.w) + '</span></button>';
+    }).join('');
+  }
+
+  function answer(btn){
+    if (state.mode !== 'quiz' || quiz.locked || !quiz.cur) return;
+    quiz.locked = true;
+    var ok = btn.getAttribute('data-w') === quiz.cur.w;
+    quiz.total++;
+    if (ok){
+      quiz.right++; quiz.streak++;
+      if (!mastered.has(quiz.cur.w)){ mastered.add(quiz.cur.w); saveMastered(); paintRing(); paintChips(); }
+      paintStat();
+    } else {
+      quiz.streak = 0;
+    }
+    btn.classList.add(ok ? 'ok' : 'no');
+    if (!ok){
+      var right = document.querySelector('.opt[data-w="' + quiz.cur.w + '"]');
+      if (right) right.classList.add('ok');
+    }
+    var sc = document.getElementById('qScore');
+    var st = document.getElementById('qStreak');
+    var msg = document.getElementById('qMsg');
+    if (sc) sc.textContent = '答对 ' + quiz.right + ' / ' + quiz.total;
+    if (st) st.textContent = '连击 ' + quiz.streak;
+    if (msg){
+      msg.textContent = ok ? '✓ 正确，已计入已掌握' : '× 正确答案已标出';
+      msg.style.color = ok ? 'var(--ok)' : 'var(--bad)';
+    }
+    timer = setTimeout(function(){
+      if (state.mode === 'quiz') newQuestion();
+    }, ok ? 850 : 1400);
+  }
+
+  function refresh(){
+    paintChips(); paintRing(); paintStat();
+    if (state.mode === 'cards') stage.innerHTML = cardView(pool());
+    else if (state.mode === 'list') stage.innerHTML = listView(pool());
+    else mountQuiz();
+  }
+
+  function setMode(m){
+    state.mode = m;
+    Array.prototype.forEach.call(document.querySelectorAll('.modes button'), function(b){
+      b.classList.toggle('on', b.getAttribute('data-mode') === m);
+    });
+    refresh();
+  }
+
+  stage.addEventListener('click', function(e){
+    var t = e.target.closest ? e.target.closest('[data-toggle]') : null;
+    if (t){ e.preventDefault(); toggleMastered(t.getAttribute('data-toggle')); return; }
+    var opt = e.target.closest ? e.target.closest('.opt') : null;
+    if (opt){ answer(opt); return; }
+    if (e.target.closest && e.target.closest('.ghost')) return;
+    var card = e.target.closest ? e.target.closest('.card') : null;
+    if (card) card.classList.toggle('flipped');
+  });
+
+  chipsEl.addEventListener('click', function(e){
+    var chip = e.target.closest ? e.target.closest('.chip') : null;
+    if (!chip) return;
+    state.cat = chip.getAttribute('data-cat');
+    refresh();
+  });
+
+  Array.prototype.forEach.call(document.querySelectorAll('.modes button'), function(b){
+    b.addEventListener('click', function(){ setMode(b.getAttribute('data-mode')); });
+  });
+
+  qEl.addEventListener('input', function(){ state.q = qEl.value; refresh(); });
+  onlyNewEl.addEventListener('change', function(){ state.onlyNew = onlyNewEl.checked; refresh(); });
+  document.getElementById('reset').addEventListener('click', function(){
+    if (!mastered.size) return;
+    if (window.confirm('清空全部掌握记录？')){ mastered.clear(); saveMastered(); refresh(); }
+  });
+
+  document.addEventListener('keydown', function(e){
+    if (e.key === '/' && document.activeElement !== qEl){
+      e.preventDefault(); qEl.focus(); qEl.select(); return;
+    }
+    if (e.key === 'Escape' && document.activeElement === qEl){
+      qEl.value = ''; state.q = ''; qEl.blur(); refresh(); return;
+    }
+    if (state.mode === 'quiz' && /^[1-4]$/.test(e.key)){
+      var opts = document.querySelectorAll('.opt');
+      var b = opts[Number(e.key) - 1];
+      if (b) b.click();
+    }
+  });
+
+  setMode('cards');
+})();
+</script>
+</body>
+</html>

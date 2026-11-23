@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AI 智能错题本 · 错题退散！</title>
+<meta name="description" content="AI 智能错题本：拍照 → AI 识别 → 按遗忘曲线复习，一个把错题收拾得明明白白的小工具。www.daomanliu.cn" />
+<meta name="theme-color" content="#ffd6e0" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📓</text></svg>" />
+<style>
+:root {
+  --bg: #fff7f1;
+  --bg-soft: #fff1e6;
+  --card: #ffffff;
+  --border: #ffe0c2;
+  --text: #2b2118;
+  --text-sub: #7a6a5c;
+  --accent: #ff5d73;
+  --accent-soft: #ffe3e8;
+  --radius: 22px;
+  --max: 880px;
+  --shadow: 0 10px 30px -12px rgba(255, 93, 115, 0.25);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1a1410;
+    --bg-soft: #241b15;
+    --card: #241b15;
+    --border: #3a2c22;
+    --text: #f6ece4;
+    --text-sub: #b9a898;
+    --accent: #ff7a8a;
+    --accent-soft: #3a242a;
+    --shadow: 0 12px 34px -12px rgba(0, 0, 0, 0.5);
+  }
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 16px/1.7 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+    "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* 背景漂浮装饰 */
+.float-decor {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+.float-decor span {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  font-size: var(--s);
+  opacity: 0.5;
+  animation: floaty var(--d) ease-in-out infinite alternate;
+  filter: saturate(1.1);
+}
+@keyframes floaty {
+  from { transform: translateY(-12px) rotate(-6deg); }
+  to   { transform: translateY(12px) rotate(8deg); }
+}
+
+/* 顶栏 */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px max(20px, calc((100vw - var(--max)) / 2));
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+  backdrop-filter: saturate(180%) blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+.topbar__brand { color: var(--text); font-weight: 700; font-size: 16px; }
+.topbar__brand:hover { text-decoration: none; }
+.topbar__dot { color: var(--text-sub); font-weight: 400; }
+.topbar__sub { color: var(--text-sub); font-weight: 500; }
+.topbar__nav { display: flex; align-items: center; gap: 10px; }
+.topbar__link {
+  padding: 9px 16px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1;
+  white-space: nowrap;
+  background: var(--card);
+}
+.topbar__link:hover { text-decoration: none; border-color: var(--accent); color: var(--accent); }
+.topbar__link--primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  font-weight: 600;
+}
+.topbar__link--primary:hover { color: #fff; filter: brightness(1.06); }
+
+/* 页面 */
+.page {
+  position: relative;
+  z-index: 1;
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 40px 20px 28px;
+}
+
+/* Hero */
+.hero {
+  text-align: center;
+  padding: 28px 8px 36px;
+}
+.hero__badge {
+  display: inline-block;
+  font-size: 13px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  border: 1px solid var(--border);
+  margin-bottom: 18px;
+}
+.hero__title {
+  margin: 0;
+  font-size: clamp(38px, 8vw, 68px);
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  font-weight: 900;
+  background: linear-gradient(120deg, #ff5d73, #ffb703 45%, #2ec4b6 90%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: pop 0.6s cubic-bezier(.2,1.2,.4,1) both;
+}
+.hero__spark { display: inline-block; animation: wiggle 2.2s ease-in-out infinite; }
+@keyframes pop { from { opacity: 0; transform: scale(.8) translateY(10px); } to { opacity: 1; transform: none; } }
+@keyframes wiggle { 0%,100% { transform: rotate(0); } 25% { transform: rotate(-12deg); } 75% { transform: rotate(12deg); } }
+.hero__sub {
+  margin: 16px auto 22px;
+  max-width: 560px;
+  color: var(--text-sub);
+  font-size: 17px;
+}
+.hero__sub b { color: var(--accent); }
+.hero__cta { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+.hero__mascot {
+  margin-top: 26px;
+  font-size: 52px;
+  letter-spacing: 6px;
+  animation: bounce 1.8s ease-in-out infinite;
+}
+@keyframes bounce {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+
+/* 按钮 */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 11px 20px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+  background: var(--card);
+  cursor: pointer;
+  transition: transform .15s ease, border-color .15s ease, color .15s ease, filter .15s ease;
+}
+.btn:hover { text-decoration: none; border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+.btn--primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  box-shadow: var(--shadow);
+}
+.btn--primary:hover { color: #fff; filter: brightness(1.06); }
+
+/* 卡片 */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 26px 24px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow);
+}
+.section__head { margin-bottom: 18px; }
+.section__kicker {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--c, var(--accent));
+  background: color-mix(in srgb, var(--c, var(--accent)) 14%, transparent);
+  padding: 4px 12px;
+  border-radius: 999px;
+  margin-bottom: 10px;
+}
+.card h2 {
+  margin: 0;
+  font-size: 22px;
+  letter-spacing: -0.01em;
+}
+
+/* 滚动出现 */
+.reveal { opacity: 0; transform: translateY(22px); transition: opacity .6s ease, transform .6s cubic-bezier(.2,.8,.3,1); }
+.reveal.in { opacity: 1; transform: none; }
+
+/* 痛点 */
+.pain__grid { display: grid; gap: 14px; }
+@media (min-width: 720px) { .pain__grid { grid-template-columns: repeat(3, 1fr); } }
+.pain__card {
+  border: 1px solid var(--border);
+  border-top: 4px solid var(--c);
+  border-radius: 16px;
+  padding: 18px 16px;
+  background: var(--bg-soft);
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+.pain__card:hover { transform: translateY(-4px) rotate(-0.5deg); box-shadow: var(--shadow); }
+.pain__emoji { font-size: 30px; margin-bottom: 6px; }
+.pain__card h3 { margin: 0 0 6px; font-size: 16px; color: var(--c); }
+.pain__card p { margin: 0; color: var(--text-sub); font-size: 14px; line-height: 1.6; }
+
+/* 魔法闭环 */
+.loop__flow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.step {
+  background: var(--bg-soft);
+  border: 2px solid var(--c);
+  border-radius: 18px;
+  padding: 16px 18px;
+  text-align: center;
+  min-width: 110px;
+  transition: transform .18s ease;
+}
+.step:hover { transform: scale(1.05) rotate(-1deg); }
+.step__emoji { font-size: 30px; }
+.step__name { font-weight: 700; margin-top: 4px; font-size: 15px; color: var(--c); }
+.loop__arrow { font-size: 22px; color: var(--text-sub); font-weight: 700; }
+.loop__note {
+  margin: 18px 0 0;
+  text-align: center;
+  color: var(--text-sub);
+  font-size: 14px;
+}
+
+/* 超能力 */
+.power__grid { display: grid; gap: 14px; }
+@media (min-width: 620px) { .power__grid { grid-template-columns: 1fr 1fr; } }
+.power__card {
+  border: 1px solid var(--border);
+  border-left: 5px solid var(--c);
+  border-radius: 14px;
+  padding: 16px 18px;
+  background: var(--bg-soft);
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+.power__card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+.power__emoji { font-size: 28px; line-height: 1.2; }
+.power__card h3 { margin: 0 0 4px; font-size: 16px; color: var(--c); }
+.power__card p { margin: 0; color: var(--text-sub); font-size: 14px; line-height: 1.6; }
+
+/* 数字 */
+.num__row { display: grid; gap: 12px; grid-template-columns: repeat(2, 1fr); }
+@media (min-width: 620px) { .num__row { grid-template-columns: repeat(4, 1fr); } }
+.num__card {
+  text-align: center;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 18px 10px;
+  background: var(--bg-soft);
+  border-top: 4px solid var(--c);
+  transition: transform .18s ease;
+}
+.num__card:hover { transform: translateY(-4px); }
+.num__val {
+  font-size: clamp(22px, 5vw, 32px);
+  font-weight: 900;
+  color: var(--c);
+  line-height: 1.1;
+}
+.num__val small { font-size: 0.45em; font-weight: 700; margin-left: 2px; color: var(--text-sub); }
+.num__label { margin-top: 6px; font-size: 13px; color: var(--text-sub); }
+
+/* 说人话 */
+.plain p { margin: 0 0 10px; font-size: 16px; }
+.plain__sub { color: var(--text-sub) !important; font-size: 14px !important; }
+
+/* 页脚 */
+.footer {
+  position: relative;
+  z-index: 1;
+  max-width: var(--max);
+  margin: 8px auto 0;
+  padding: 18px 20px 40px;
+  text-align: center;
+}
+.footer__cta { margin-bottom: 14px; }
+.footer__meta {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  color: var(--text-sub);
+  font-size: 12px;
+}
+.footer__sep { opacity: 0.5; }
+
+/* 彩蛋火花 */
+.spark {
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  font-size: 18px;
+  transform: translate(-50%, -50%);
+  animation: spark .9s ease-out forwards;
+}
+@keyframes spark {
+  0%   { opacity: 1; transform: translate(-50%, -50%) scale(0.4); }
+  100% { opacity: 0; transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(1.1); }
+}
+
+@media (max-width: 560px) {
+  .hero__title { font-size: 40px; }
+  .card { padding: 20px 16px; }
+  .topbar { padding: 10px 16px; }
+  .loop__arrow { transform: rotate(90deg); }
+  .step { min-width: 0; flex: 1 1 40%; }
+}
+
+</style>
+<noscript><style>.reveal{opacity:1;transform:none}</style></noscript>
+</head>
+<body>
+  <!-- 背景漂浮装饰 -->
+  <div class="float-decor" aria-hidden="true">
+    <span style="--x:6%;--y:18%;--d:11s;--s:22px">📓</span>
+    <span style="--x:88%;--y:12%;--d:13s;--s:26px">✨</span>
+    <span style="--x:12%;--y:78%;--d:14s;--s:24px">🤖</span>
+    <span style="--x:82%;--y:70%;--d:12s;--s:20px">📝</span>
+    <span style="--x:50%;--y:8%;--d:15s;--s:18px">💡</span>
+    <span style="--x:30%;--y:90%;--d:12s;--s:20px">⭐</span>
+  </div>
+
+  <header class="topbar">
+    <a class="topbar__brand" href="https://mb.daomanliu.cn" target="_blank" rel="noopener">📓 <span class="topbar__dot">·</span> <span class="topbar__sub">AI 智能错题本</span></a>
+    <nav class="topbar__nav">
+      <a class="topbar__link" href="https://daomanliu.github.io" target="_blank" rel="noopener">博客 ↗</a>
+      <a class="topbar__link topbar__link--primary" href="https://mb.daomanliu.cn" target="_blank" rel="noopener">去体验 ↗</a>
+    </nav>
+  </header>
+
+  <main class="page">
+    <!-- Hero -->
+    <section class="hero">
+      <div class="hero__badge">🎒 一个把「错题」收拾得明明白白的小工具</div>
+      <h1 class="hero__title">错题退散！<span class="hero__spark">✨</span></h1>
+      <p class="hero__sub">拍照 → AI 读题 → 自动安排复习，<b>30 秒</b>录入一道题，到期准时喊你复习。</p>
+      <div class="hero__cta">
+        <a class="btn btn--primary" href="https://mb.daomanliu.cn" target="_blank" rel="noopener">去体验一下 ↗</a>
+        <a class="btn" href="#how">看看怎么玩 ↓</a>
+      </div>
+      <div class="hero__mascot" aria-hidden="true">📚🤖📝</div>
+    </section>
+
+    <!-- 痛点 -->
+    <section class="card reveal">
+      <div class="section__head">
+        <span class="section__kicker" style="--c:#ff6b6b">01 · 痛点</span>
+        <h2>错题本的三大酷刑 😭</h2>
+      </div>
+      <div class="pain__grid">
+        <div class="pain__card" style="--c:#ff6b6b">
+          <div class="pain__emoji">✋</div>
+          <h3>抄题抄到手抽筋</h3>
+          <p>一道题抄十分钟，还没开始复习，人先累趴下了。</p>
+        </div>
+        <div class="pain__card" style="--c:#ffb703">
+          <div class="pain__emoji">🗑️</div>
+          <h3>整理完就吃灰</h3>
+          <p>本子写得漂漂亮亮，从此再也没打开过第二次。</p>
+        </div>
+        <div class="pain__card" style="--c:#2ec4b6">
+          <div class="pain__emoji">🔍</div>
+          <h3>想找找不到</h3>
+          <p>「那道几何题到底在哪来着？」翻半天翻不到。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 魔法闭环 -->
+    <section class="card reveal" id="how">
+      <div class="section__head">
+        <span class="section__kicker" style="--c:#7c5cff">02 · 魔法闭环</span>
+        <h2>一套闭环，全部自动 🔄</h2>
+      </div>
+      <div class="loop__flow">
+        <div class="step" style="--c:#ff8fab">
+          <div class="step__emoji">📷</div>
+          <div class="step__name">拍照</div>
+        </div>
+        <div class="loop__arrow">→</div>
+        <div class="step" style="--c:#ffb703">
+          <div class="step__emoji">🤖</div>
+          <div class="step__name">AI 读题</div>
+        </div>
+        <div class="loop__arrow">→</div>
+        <div class="step" style="--c:#2ec4b6">
+          <div class="step__emoji">📥</div>
+          <div class="step__name">确认入库</div>
+        </div>
+        <div class="loop__arrow">→</div>
+        <div class="step" style="--c:#7c5cff">
+          <div class="step__emoji">📅</div>
+          <div class="step__name">遗忘曲线复习</div>
+        </div>
+      </div>
+      <p class="loop__note">你只管拍，剩下的交给它。到期自动出现在「今日复习」，跑都跑不掉。</p>
+    </section>
+
+    <!-- 超能力 -->
+    <section class="card reveal">
+      <div class="section__head">
+        <span class="section__kicker" style="--c:#ff9f1c">03 · 超能力</span>
+        <h2>它都会点啥 ⚡</h2>
+      </div>
+      <div class="power__grid">
+        <div class="power__card" style="--c:#ff6b6b">
+          <div class="power__emoji">📸</div>
+          <h3>拍照就录入</h3>
+          <p>30 秒一道，多图也行，本地先压缩再上传。</p>
+        </div>
+        <div class="power__card" style="--c:#ffb703">
+          <div class="power__emoji">🧠</div>
+          <h3>AI 读题</h3>
+          <p>题干、解答、点评，自动给你整好，可采纳可丢弃。</p>
+        </div>
+        <div class="power__card" style="--c:#2ec4b6">
+          <div class="power__emoji">🔔</div>
+          <h3>智能复习</h3>
+          <p>1/3/7/14/30 天档位，到期自动喊你，记得/模糊/忘记三档反馈。</p>
+        </div>
+        <div class="power__card" style="--c:#7c5cff">
+          <div class="power__emoji">🔎</div>
+          <h3>多维检索</h3>
+          <p>关键词、标签、状态、错题本，随便组合筛，分页找。</p>
+        </div>
+        <div class="power__card" style="--c:#ff8fab">
+          <div class="power__emoji">📄</div>
+          <h3>一键导出</h3>
+          <p>DOCX 或 Markdown 打包，打印备份都行，异步生成可下载。</p>
+        </div>
+        <div class="power__card" style="--c:#06d6a0">
+          <div class="power__emoji">📱</div>
+          <h3>三端同步</h3>
+          <p>网页、鸿蒙 App、小程序，同一套数据，走到哪学到哪。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 数字会说话 -->
+    <section class="card reveal">
+      <div class="section__head">
+        <span class="section__kicker" style="--c:#ef476f">04 · 数字会说话</span>
+        <h2>几个记得住的数字 🔢</h2>
+      </div>
+      <div class="num__row">
+        <div class="num__card" style="--c:#ff6b6b">
+          <div class="num__val">30<small>秒</small></div>
+          <div class="num__label">录入一道题</div>
+        </div>
+        <div class="num__card" style="--c:#ffb703">
+          <div class="num__val">1/3/7/14/30<small>天</small></div>
+          <div class="num__label">复习档位</div>
+        </div>
+        <div class="num__card" style="--c:#2ec4b6">
+          <div class="num__val">3<small>端</small></div>
+          <div class="num__label">数据同步</div>
+        </div>
+        <div class="num__card" style="--c:#7c5cff">
+          <div class="num__val">0<small>次</small></div>
+          <div class="num__label">抄题手酸</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 说人话 -->
+    <section class="card reveal">
+      <div class="section__head">
+        <span class="section__kicker" style="--c:#118ab2">05 · 说人话</span>
+        <h2>不装了，翻译一下 🗣️</h2>
+      </div>
+      <div class="plain">
+        <p>网页 + 华为手机 App + 小程序，数据存你自己的仓库，AI 用你自己的大模型，一键打包部署。</p>
+        <p class="plain__sub">没有听不懂的术语，就是一套「拍了就能复习」的工具。</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer__cta">
+      <a class="btn btn--primary" href="https://mb.daomanliu.cn" target="_blank" rel="noopener">去错题本看看 ↗</a>
+    </div>
+    <div class="footer__meta">
+      <span>AI 智能错题本 · 一个学生做的学习工具</span>
+      <span class="footer__sep">·</span>
+      <a href="https://daomanliu.github.io" target="_blank" rel="noopener">博客</a>
+      <span class="footer__sep">·</span>
+      <a href="https://github.com/daomanliu" target="_blank" rel="noopener">GitHub</a>
+      <span class="footer__sep">·</span>
+      <a id="icp" href="https://beian.miit.gov.cn/" target="_blank" rel="noopener">渝ICP备2026030058号-1</a>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      // 备案号
+      var icp = document.getElementById('icp');
+      if (icp) icp.textContent = '渝ICP备2026030058号-1';
+
+      // 滚动出现
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+        });
+      }, { threshold: 0.15 });
+      document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
+
+      // 彩蛋：点谁谁冒星星
+      document.body.addEventListener('click', function (e) {
+        if (e.target.closest('a')) return;
+        var emojis = ['✨','⭐','💫','📚','🤖','🔥','💖'];
+        for (var i = 0; i < 14; i++) {
+          var s = document.createElement('span');
+          s.className = 'spark';
+          s.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+          s.style.left = e.clientX + 'px';
+          s.style.top = e.clientY + 'px';
+          var ang = Math.random() * Math.PI * 2;
+          var dist = 50 + Math.random() * 110;
+          s.style.setProperty('--dx', Math.cos(ang) * dist + 'px');
+          s.style.setProperty('--dy', Math.sin(ang) * dist + 'px');
+          document.body.appendChild(s);
+          setTimeout((function (x) { return function () { x.remove(); }; })(s), 900);
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

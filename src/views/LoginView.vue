@@ -3,7 +3,7 @@
     <!-- 左上角 Logo -->
     <div class="login-logo-top">
       <router-link to="/">
-        <img src="/logo.png" alt="logo" />
+        <img src="/favicon.png" alt="logo" />
       </router-link>
     </div>
 

@@ -1,28 +1,10 @@
 ---
-title: 人物特征 47 词：从字母序到六类性格档案
+title: AI做的html用iframe嵌入测试
 date: 2026-11-19
 tags: [英语, 词汇, 六级, 交互]
 summary: 把「人物特征」的 47 个词按外形、心智、善恶、气质、抽象重排成六个类别，再做成一个能翻卡、能测验的单文件交互页。
 ---
 
-词汇表按字母排，是为了查；按语义排，才是为了记。
-
-「人物特征」这一节一共 **47 个词**，散开看是一堆互不相干的形容词和名词，聚起来其实是六组可以互相咬合的档案：一个人长什么样、脑子灵不灵、心肠好不好、气质怪不怪，最后剩下几个只能抽象地说的名词。下面先分类，再给一个能直接上手翻的交互页。
-
-## 一、为什么重排：47 个词，六类档案
-
-| 类别 | 数量 | 判断标准 | 代表词 |
-| --- | --- | --- | --- |
-| 外貌形体 | 11 | 长在头上、身上、身上的东西：头发、肤色、身材、露与不露 | blonde, bald, slender |
-| 智力心智 | 7 | 评价「脑子」与「懂事程度」 | shrewd, clumsy, illiterate |
-| 性情之善 | 10 | 会被别人夸的那类品质 | amiable, sincere, diligent |
-| 性情之恶 | 10 | 会被别人躲着的那类品质 | brutal, ruthless, sinister |
-| 气质状态 | 5 | 不分好坏，只是「怪、闷、单身、世故、自我」 | eccentric, cosmopolitan, ego |
-| 抽象特质 | 4 | 名词化的「人的内在」 | vigour, flaw, greed, hypocrisy |
-
-分类的原则只有一条：**同一个类别内部的词，褒贬、对象、可替换性尽量接近**。这样背的时候，一个词被激活，同类的五六个会跟着一起浮上来。
-
-## 二、交互页：翻卡、筛选、测验
 
 <iframe src="/attachement/26_11_19/personality.html" width="100%" height="820" style="width:100%;height:820px;border:0;border-radius:14px;display:block" loading="lazy" title="人物特征 47 词 · 交互单词卡"></iframe>
 
@@ -33,10 +15,6 @@ summary: 把「人物特征」的 47 个词按外形、心智、善恶、气质�
 - **测验**：随机出「看词选义」或「看义选词」，答对自动计入已掌握，答错会把正确答案标红。数字键 1–4 可以直接选。
 
 进度存在浏览器 localStorage 里，只在本机有效，关掉页面不会丢；换设备就是全新的。搜索框支持单词、音标和中文释义（比如直接搜「秃」只剩 *bald*），按 `/` 聚焦、`Esc` 清空。
-
-> 顺便记一下嵌入规则：博客正文会被 DOMPurify 净化，Markdown 里直接写的 `<script>` 会被删掉，所以交互页必须是一份真正的静态文件。放在 `public/attachement/26_11_19/personality.html`，用**同源路径** `/attachement/...` 引入——白名单里放行的是同源与 B 站、YouTube 这几十个站点，本地和线上都能正常加载。
-
-## 三、六类详解
 
 ### 1. 外貌形体 · 11
 
@@ -131,19 +109,3 @@ summary: 把「人物特征」的 47 个词按外形、心智、善恶、气质�
 
 四个名词，正好对应四种「说不清但确实存在」的东西：能量（vigour）、裂缝（flaw）、欲望（greed）、面具（hypocrisy）。*flaw* 和 *greed* 都常出现在写作里，*a fatal flaw*、*greed for money* 是可以直接搬进作文的搭配。
 
-## 四、几组刻意对齐的记忆线索
-
-1. **残忍三连**：*brutal*（对你动手）· *ruthless*（对你不动心）· *sinister*（在暗处）。三个都能译「狠」，但一个及物、一个不及物、一个只描气场。
-2. **体型三连**：*trim*（练过）· *slender*（天生细）· *dwarf*（矮到反常）。
-3. **善恶同根**：*amiable / benevolent / lenient* 是「给人方便」，*nasty / sinister / wicked* 是「给人难受」，中间隔着 *eccentric / tedious* 这种说不清好坏的。
-4. **-ous / -ent / -al 结尾多为形容词，-ism / -cy / -ness 多为名词**：*hypocrisy*、*greed*、*vigour*、*flaw*、*ego* 五个名词单独记，就不会再出现「这个词怎么没有 a.」的犹豫。
-
-## 五、怎么用这个页面
-
-最省力的顺序是：先**列表**看一遍分组，把不认识的打个勾标记（这一步不计入掌握）；再切**卡片**，只看正面想中文，想不起来就翻面；最后用**测验**刷三五轮，答对的会自动进「已掌握」，圆环一圈走完成绩就出来了。同一台机器上，第二天再打开还是昨天那个进度。
-
-一份静态 HTML，没有依赖、没有网络请求，断网也能背。
-
----
-
-*词汇范围：附录二「认知词汇」页 243 中「人物特征」整节（不含左侧前页残留的 knit / rehabilitate / wretched / faint / feeble / cocaine / heroin，也不含下方「情感态度」的 zeal / heartfelt / glamour / grace / marvel / darling / gratitude）。*

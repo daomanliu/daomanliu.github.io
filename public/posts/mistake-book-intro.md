@@ -11,5 +11,5 @@ summary: 拍照 → AI 读题 → 遗忘曲线复习。给做了一阵子的错�
 
 <iframe src="/attachement/26_11_23/mistake-book-intro.html" width="100%" height="820" style="width:100%;height:820px;border:0;border-radius:16px;display:block" loading="lazy" title="AI 智能错题本 · 项目介绍页"></iframe>
 
-想整页看：<https://daomanliu.github.io/attachement/26_11_23/mistake-book-intro.html>
-
+想整页看：
+<https://www.daomanliu.cn>

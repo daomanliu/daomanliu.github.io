@@ -32,7 +32,7 @@ const contactLinks = profile.links.filter((link) => link.label !== 'CV')
       <SectionBlock
         v-if="profile.interests.length"
         id="interests"
-        title="研究方向"
+        title="期待研究方向"
         en="Research Interest"
       >
         <ul class="bullets">

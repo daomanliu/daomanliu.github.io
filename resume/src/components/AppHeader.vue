@@ -1,11 +1,33 @@
 <script setup>
-import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 
 import AppIcon from '@/components/AppIcon.vue'
 import { useTheme } from '@/composables/useTheme'
 import { navItems, profile } from '@/data/profile'
 
 const { theme, toggleTheme } = useTheme()
+
+// 某个 section 到底会不会渲染：数据为空时 App.vue 里整块隐藏，
+// 这里跟着过滤导航，避免出现点了没反应的死锚点。
+function hasSection(id) {
+  const map = {
+    about: true,
+    interests: profile.interests.length > 0,
+    skills: profile.skills.length > 0,
+    education: profile.education.length > 0,
+    news: profile.news.length > 0,
+    publications: profile.publications.length > 0,
+    awards: profile.awards.length > 0,
+    services: profile.services.length > 0,
+    teaching: profile.teaching.length > 0,
+    contact: true,
+  }
+  return map[id] ?? true
+}
+
+const visibleNav = computed(() =>
+  navItems.filter((item) => item.external || hasSection(item.id)),
+)
 
 const progress = ref(0)
 const stuck = ref(false)
@@ -36,7 +58,7 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onScroll))
       <a class="brand" href="#top">{{ profile.name }}</a>
 
       <nav class="topnav" aria-label="页面导航">
-        <template v-for="item in navItems" :key="item.label">
+        <template v-for="item in visibleNav" :key="item.label">
           <a
             v-if="item.external"
             :href="item.href"

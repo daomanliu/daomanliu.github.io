@@ -64,12 +64,24 @@ export const profile = {
   ],
 
   // ---------- 最新动态（时间新的放上面） ----------
+  // text 里可以直接写链接，三种写法都支持（混着写也行）：
+  //   [链接文字](https://example.com)   ← 推荐，显示的文字由你定
+  //   [https://example.com]             ← 方括号里放网址，显示时会去掉 http(s)://
+  //   https://example.com               ← 裸网址，也会自动变成链接
   news: [
-    { data: '2026-11', tag: '项目', text: '给西南大学教务系统做了个自用的鸿蒙软件[https://github.com/daomanliu/swu-eas]'},
-    { date: '2026-11', tag: '项目', text: 'Java课程项目，可通过网页[https://www.daomanliu.cn]访问。' },
+    {
+      date: '2026-11',
+      tag: '项目',
+      text: '给西南大学教务系统做了个自用的鸿蒙软件，[源码见 GitHub](https://github.com/daomanliu/swu-eas)。',
+    },
+    {
+      date: '2026-11',
+      tag: '项目',
+      text: 'Java 课程项目，可通过 [www.daomanliu.cn](https://www.daomanliu.cn) 访问。',
+    },
     { date: '2026-09', tag: '荣誉', text: '评选国家奖学金。' },
-    { date: '2025-05', tag: '分享', text: '在组内做了「ATTENTION RESIDUALS」的报告。' },
-    { date: '2025-11', tag: '开始', text: '加入胡莎老师的AI学习小组。' },
+    { date: '2026-05', tag: '分享', text: '在组内做了「ATTENTION RESIDUALS」的报告。' },
+    { date: '2025-11', tag: '开始', text: '加入胡莎老师的 AI 学习小组。' },
   ],
 
   // ---------- 论文发表 ----------

@@ -16,6 +16,7 @@
 - **push 即发布**：GitHub Actions 自动构建部署，在 GitHub 网页上直接新建文章也能上线
 - **写作后台**：站内 `/admin` 提供分屏编辑器（编辑/预览可折叠），写完导出 `.md`
 - **阅读体验**：文章列表、标签筛选、全文搜索，访客无需登录
+- **个人简介页**：`resume/` 是一个独立的 Vue 子站（学术主页风格），部署在 [`/resume/`](https://daomanliu.github.io/resume/)
 
 ## 技术栈
 
@@ -28,9 +29,14 @@ Vue 3 · Vite · Vue Router · Pinia · Ant Design Vue · marked · KaTeX · DOM
 ```bash
 npm install       # 安装依赖
 npm run dev       # 开发服务器
-npm run build     # 构建到 dist/（自动重新生成文章索引）
+npm run build     # 构建到 dist/（自动重新生成文章索引，并把 resume 子站复制进 dist/resume）
 npm run preview   # 预览构建产物
 npm run posts     # 只重新生成文章索引 posts.json
+
+# 个人简介子站（详见 resume/README.md）
+npm run resume:install   # 安装 resume/ 的依赖
+npm run resume:dev       # 开发服务器 http://localhost:5174/resume/
+npm run resume:build     # 构建到 resume/dist
 ```
 
 ## 写文章
@@ -74,6 +80,14 @@ git add -A && git commit -m "新文章" && git push
 - 仓库：`daomanliu.github.io`（用户主页仓库，`vite.config.js` 中 `base: '/'`）
 - Pages 来源：**Settings → Pages → Source → GitHub Actions**
 - 部署流程：`.github/workflows/deploy.yml`（push 到 main 自动触发）
+- 个人简介子站：`resume/`（独立 Vite 子站，`base: '/resume/'`），构建后由 `scripts/copy-resume.js` 复制进 `dist/resume`，访问地址 <https://daomanliu.github.io/resume/>
+
+## 个人简介页（resume/）
+
+`resume/` 是一个独立的小 Vue 站，学术主页那种「左侧头像栏 + 右侧简介」的排版，
+零第三方 UI 依赖（只有 `vue`），支持暗色模式和直接打印成 PDF。
+
+内容全在 `resume/src/data/profile.js` 里，改一个字都不用碰组件。详见 [resume/README.md](resume/README.md)。
 
 ## 站长后台
 
@@ -86,9 +100,14 @@ git add -A && git commit -m "新文章" && git push
 ## 目录结构
 
 ```
-├── .github/workflows/deploy.yml  # 自动部署流程
+├── .github/workflows/deploy.yml  # 自动部署流程（含 resume 子站构建）
 ├── public/posts/                 # 博客文章（.md）+ posts.json 索引
-├── scripts/build-posts-index.js  # 索引生成脚本
+├── scripts/
+│   ├── build-posts-index.js      # 索引生成脚本
+│   └── copy-resume.js            # 把 resume/dist 复制进 dist/resume
+├── resume/                       # 个人简介子站（独立 Vite 应用）
+│   ├── src/data/profile.js       # ★ 简介的全部文字
+│   └── README.md
 ├── src/
 │   ├── config/blog.js            # 博客信息 + 站长账号
 │   ├── layouts/BlogLayout.vue    # 站点布局

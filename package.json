@@ -9,7 +9,11 @@
     "dev": "vite",
     "prebuild": "node scripts/build-posts-index.js",
     "build": "vite build",
-    "preview": "vite preview"
+    "postbuild": "node scripts/copy-resume.js",
+    "preview": "vite preview",
+    "resume:install": "npm --prefix resume install",
+    "resume:dev": "npm --prefix resume run dev",
+    "resume:build": "npm --prefix resume run build"
   },
   "dependencies": {
     "@ant-design/icons-vue": "^7.0.1",

@@ -16,7 +16,7 @@
 - **push 即发布**：GitHub Actions 自动构建部署，在 GitHub 网页上直接新建文章也能上线
 - **写作后台**：站内 `/admin` 提供分屏编辑器（编辑/预览可折叠），写完导出 `.md`
 - **阅读体验**：文章列表、标签筛选、全文搜索，访客无需登录
-- **个人简介页**：`resume/` 是一个独立的 Vue 子站（学术主页风格），部署在 [`/resume/`](https://daomanliu.github.io/resume/)
+- **个人简介页**：`resume/` 是一个独立的 Vue 子站，部署在 [`/resume/`](https://daomanliu.github.io/resume/)
 
 ## 技术栈
 

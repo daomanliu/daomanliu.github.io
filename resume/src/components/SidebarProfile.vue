@@ -44,9 +44,8 @@ const sidebarLinks = profile.links.filter((link) => link.icon !== 'mail')
 .photo {
   display: block;
   width: 100%;
-  aspect-ratio: 1 / 1;
-  object-fit: cover;
-  object-position: center 20%;
+  /* 按图片原始比例显示（当前是 525×703 的竖图），不裁切 */
+  height: auto;
   border: 1px solid var(--line);
   border-radius: 3px;
   filter: grayscale(0.08);

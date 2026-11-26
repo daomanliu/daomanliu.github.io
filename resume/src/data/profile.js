@@ -80,7 +80,7 @@ export const profile = {
       text: 'Java 课程项目，可通过 [www.daomanliu.cn](https://www.daomanliu.cn) 访问。',
     },
     { date: '2026-09', tag: '荣誉', text: '评选国家奖学金。' },
-    { date: '2026-05', tag: '分享', text: '在组内做了「ATTENTION RESIDUALS」的报告，一篇Kimi家的技术报告，[GitHub访问](https://github.com/MoonshotAI/Attention-Residuals)。' },
+    { date: '2026-05', tag: '分享', text: '在组内做了「ATTENTION RESIDUALS」的报告，一篇Kimi的技术报告，[GitHub](https://github.com/MoonshotAI/Attention-Residuals)。' },
     { date: '2025-11', tag: '开始', text: '加入胡莎老师的 AI 学习小组。' },
   ],
 

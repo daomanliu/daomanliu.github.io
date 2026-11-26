@@ -18,6 +18,16 @@
             </a-button>
           </template>
           <router-link v-else to="/login" class="nav-link">登录</router-link>
+          <!-- 个人简介页（resume 子站，独立构建，部署在 /resume/） -->
+          <a
+            class="nav-link nav-link--resume"
+            href="/resume/"
+            target="_blank"
+            rel="noopener"
+            title="打开个人简介"
+          >
+            简历<span class="ext" aria-hidden="true">↗</span>
+          </a>
         </nav>
       </div>
     </header>
@@ -129,6 +139,29 @@ function handleLogout() {
 }
 .nav-link:hover, .nav-link.router-link-exact-active {
   color: #1890ff;
+}
+/* 简历入口：右上角的胶囊按钮，和普通导航区分开 */
+.nav-link--resume {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 4px 11px;
+  border: 1px solid #e3e6ec;
+  border-radius: 999px;
+  color: #1a1a2e;
+  font-weight: 500;
+  line-height: 1.5;
+  transition: color 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+}
+.nav-link--resume:hover {
+  color: #1890ff;
+  border-color: #9ecbff;
+  background: #f0f7ff;
+  text-decoration: none;
+}
+.nav-link--resume .ext {
+  font-size: 11px;
+  opacity: 0.65;
 }
 .nav-user {
   font-size: 14px;

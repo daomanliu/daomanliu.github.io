@@ -48,8 +48,8 @@ export const profile = {
   // ---------- 技能 ----------
   skills: [
     { lead: '语言', detail: '中文、English' },
-    { lead: '开发', detail: 'C/C++、Java、Python、SQL' },
-    { lead: '工具', detail: 'Git、Linux、Docker、LaTeX' },
+    { lead: '开发', detail: 'C/C++、Java、Python、SQL、Vue' },
+    { lead: '工具', detail: 'Git、Linux、Docker、LaTeX、DSH' },
     { lead: '其他', detail: '喜欢把学到的东西整理成能看懂的笔记' },
   ],
 
@@ -80,7 +80,7 @@ export const profile = {
       text: 'Java 课程项目，可通过 [www.daomanliu.cn](https://www.daomanliu.cn) 访问。',
     },
     { date: '2026-09', tag: '荣誉', text: '评选国家奖学金。' },
-    { date: '2026-05', tag: '分享', text: '在组内做了「ATTENTION RESIDUALS」的报告。' },
+    { date: '2026-05', tag: '分享', text: '在组内做了「ATTENTION RESIDUALS」的报告，一篇Kimi家的技术报告，[GitHub访问](https://github.com/MoonshotAI/Attention-Residuals)。' },
     { date: '2025-11', tag: '开始', text: '加入胡莎老师的 AI 学习小组。' },
   ],
 
@@ -92,6 +92,7 @@ export const profile = {
   // ---------- 获奖与荣誉 ----------
   awards: [
     { year: '2026', text: '第十八届全国大学生数学竞赛重庆赛区一等奖', extra: '省级' },
+    { year: '2026', text: '国家奖学金', extra: '国家级' },
     { year: '2026', text: '第二十届西南大学数学建模竞赛三等奖', extra: '校级' },
     { year: '2025', text: '第十七届全国大学生数学竞赛重庆赛区一等奖', extra: '省级' },
   ],
@@ -103,7 +104,7 @@ export const profile = {
   teaching: [],
 
   // ---------- 页脚 ----------
-  updatedAt: '2026-11-25',
+  updatedAt: '2026-11-26',
   footerNote: 'Powered by Vue 3 + Vite · 静态托管在 GitHub Pages',
 }
 

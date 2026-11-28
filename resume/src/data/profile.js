@@ -70,11 +70,7 @@ export const profile = {
   //   https://example.com               ← 裸网址，也会自动变成链接
   news: [
     { date: '2026-11', tag: '参会', text: '参加[ICNSC](https://cis.swu.edu.cn/ICNSC2026/)'},
-    {
-      date: '2026-11',
-      tag: '项目',
-      text: 'Java 课程项目，可通过 [www.daomanliu.cn](https://www.daomanliu.cn) 访问。',
-    },
+    { date: '2026-11', tag: '项目', text: 'Java 课程项目，可通过 [www.daomanliu.cn](https://www.daomanliu.cn) 访问。' },
     { date: '2026-09', tag: '荣誉', text: '评选国家奖学金。' },
     { date: '2026-07', tag: '研学', text: '参加CUHK任洪亮老师的ELEG5757课程，参观[SLAI](https://www.slai.edu.cn/)。' },
     { date: '2026-05', tag: '参会', text: '参加[ICCEA](https://www.ic-cea.org/iccea2026)'},

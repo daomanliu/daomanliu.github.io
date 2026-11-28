@@ -69,6 +69,7 @@ export const profile = {
   //   [https://example.com]             ← 方括号里放网址，显示时会去掉 http(s)://
   //   https://example.com               ← 裸网址，也会自动变成链接
   news: [
+    { date: '2026-11', tag: '参会', text: '参加[ICNSC](https://cis.swu.edu.cn/ICNSC2026/)'},
     {
       date: '2026-11',
       tag: '项目',
@@ -80,7 +81,9 @@ export const profile = {
       text: 'Java 课程项目，可通过 [www.daomanliu.cn](https://www.daomanliu.cn) 访问。',
     },
     { date: '2026-09', tag: '荣誉', text: '评选国家奖学金。' },
-    { date: '2026-05', tag: '分享', text: '在组内做了「ATTENTION RESIDUALS」的报告，一篇Kimi的技术报告，[GitHub](https://github.com/MoonshotAI/Attention-Residuals)。' },
+    { date: '2026-07', tag: '研学', text: '参加CUHK任洪亮老师的ELEG5757课程，参观[SLAI](https://www.slai.edu.cn/)。' },
+    { date: '2026-05', tag: '参会', text: '参加[ICCEA](https://www.ic-cea.org/iccea2026)'},
+    { date: '2026-05', tag: '分享', text: '在组内做了一篇Kimi的「ATTENTION RESIDUALS」的报告，[GitHub](https://github.com/MoonshotAI/Attention-Residuals)。' },
     { date: '2025-11', tag: '开始', text: '加入胡莎老师的 AI 学习小组。' },
   ],
 

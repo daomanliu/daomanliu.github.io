@@ -73,11 +73,6 @@ export const profile = {
     {
       date: '2026-11',
       tag: '项目',
-      text: '给西南大学教务系统做了个自用的鸿蒙软件，[源码见 GitHub](https://github.com/daomanliu/swu-eas)。',
-    },
-    {
-      date: '2026-11',
-      tag: '项目',
       text: 'Java 课程项目，可通过 [www.daomanliu.cn](https://www.daomanliu.cn) 访问。',
     },
     { date: '2026-09', tag: '荣誉', text: '评选国家奖学金。' },
